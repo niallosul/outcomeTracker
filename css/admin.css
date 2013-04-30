@@ -1,0 +1,138 @@
+
+html, body { height: 100%; width: 99%; margin:auto; }
+body{ font: 75% "Trebuchet MS", sans-serif}
+h2 { font-family:"Arial Narrow",Arial, Helvetica, sans-serif; font-size: 1.75em; margin: .6em 0;color:#888888; letter-spacing:.1em; }
+fieldset { padding:0; border:0; margin-top:25px; }
+
+form {
+margin:5px auto;
+padding-bottom:10px;
+}
+
+
+::-webkit-scrollbar {
+    width: 12px;
+}
+ 
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 8px rgba(0,0,0,0.3); 
+    border-radius: 10px;
+}
+ 
+::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5); 
+}
+	
+.menu_login_container table tr{vertical-align:top}
+.menu_login_container table tr td{padding:0 0 0 14px}
+.menu_login_container label{font-weight:normal;padding-left:1px}
+.menu_login_container .inputlabel {color:#1c94c4}
+
+.patlink, .tasklink, .issuelink {padding: .4em 1em .4em 20px;text-decoration: none;margin-bottom:2px; position: relative;}
+.patlink:hover, .tasklink:hover, .issuelink:hover {border: 1px solid #fbcb09; background: #fdf5ce; cursor: pointer;}
+
+.newIssue {text-align:right;padding:0 10px 0 0;}
+.newIssue:hover {color: #E78F08; cursor: pointer;}
+.issStamp {font-size: .8em; font-style:italic;color:#888888;}
+.issText {font-size: 1em; padding: .4em 1em; margin-bottom:1em;  width: 75%;}
+
+.issueHeader {
+	height:50px; 
+	overflow:auto;
+	color:#888888;
+	border: 1px solid #1c94c4;
+	padding: 5px;
+	margin-bottom:10px;
+	font-family: "Trebuchet MS", sans-serif;
+	}
+
+.smallholder {
+	height:250px; 
+	width:95%;
+	float:left;
+	border: 1px solid #1c94c4;
+	padding: 5px;
+	margin:10px;
+	}
+
+.toolholder {
+	height:500px; 
+	width:95%;
+	float:left;
+	border: 1px solid #1c94c4;
+	padding: 5px;
+	margin:10px;
+	}
+	
+.bigform {
+text-align:center;
+}
+
+.bigform input {
+ float:left;
+ font-size:12px;
+ padding:4px 2px;
+ border:solid 1px #aacfe4;
+ width:45%;
+ margin:2px 0 10px 5px;
+}
+
+.bigform label {
+display:block;
+font-style:italic;
+color:#888888;
+font-weight:bold;
+text-align:right;
+width:45%;
+float:left;
+}
+
+.bigform p{
+font-size:15px;
+color:#666666;
+margin-bottom:20px;
+border-bottom:solid 1px #b7ddf2;
+padding-bottom:10px;
+}
+
+.bigform select {width:95%; "Trebuchet MS", sans-serif; padding: 2px;color:#1c94c4}
+		
+.projteam label {display:block; width:95%; font-size: .8em; font-style:italic;color:#888888;}
+.projteam select {display:block; width:95%; "Trebuchet MS", sans-serif; padding: 2px;color:#1c94c4;}
+
+ button
+		{
+		margin:0 auto;
+		text-align:center;
+		padding: 1px 5px 1px 5px;
+		color: #296A84;
+		border: solid 1px #b6d6ff;
+		-webkit-border-radius: .5em;
+		-moz-border-radius: .5em;
+		border-radius: .5em;
+		-webkit-box-shadow: 1px 1px 1px #ccc;
+		box-shadow: 2px 2px 2px #bbb;
+		background-color: #CCCCFF;
+		font-family: Trebuchet MS, Tahoma, Verdana, Arial, sans-serif;
+		font-size:1.25em;
+		}
+ button:hover
+		{
+		cursor: pointer;
+		background-color:#FECA40;
+		color: #296A84;
+		}
+
+ button[disabled] 
+		{
+        color: #AAAAB8;
+		box-shadow: 0px 0px 0px;
+		}
+		
+ button[disabled]:hover 
+		{
+        cursor: default;
+		background-color: #CCCCFF;
+		color:#AAAAB8;
+		}

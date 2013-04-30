@@ -1,0 +1,94 @@
+
+html, body { height: 100%; margin:auto; }
+body{ font: "Trebuchet MS", sans-serif}
+h1 {margin:15px 0 0 0; display:inline-block;vertical-align:middle;font-family:"Arial Narrow",Arial, Helvetica, sans-serif; font-size: 2.1em;color:#fdf5ce;}
+h2 { font-family:"Arial Narrow",Arial, Helvetica, sans-serif; font-size: 1.75em; margin: .6em 0;color:#888888; letter-spacing:.1em; }
+fieldset { padding:0; border:0; margin-top:25px; }
+
+
+div#header{               
+top:0;        
+left:0;        
+width:100%;
+background:#b0c4de;
+overflow:auto;        
+}  
+      
+div#footer{        
+position:absolute;        
+bottom:0;        
+left:0;        
+width:100%;        
+height:footer-<length>;        
+}        
+
+
+form {
+margin:5px auto;
+padding-bottom:10px;
+}
+
+
+::-webkit-scrollbar {
+    width: 12px;
+}
+ 
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 8px rgba(0,0,0,0.3); 
+    border-radius: 10px;
+}
+ 
+::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5); 
+}
+
+.patlink, .tasklink {opacity:.8;font-size:1.5em; padding: .4em 1em .4em 20px;text-decoration: none;margin-bottom:2px; position: relative;}
+.patlink:hover, .tasklink:hover {border: 1px solid #fbcb09; background: #fdf5ce; cursor: pointer;}
+
+.searchbox {float:right;}
+
+.newItemText {float:right;padding:0 10px 0 0;font-size:.75em;}
+.newItemText:hover {color: #E78F08; cursor: pointer;}
+.issStamp {font-size: .8em; font-style:italic;color:#888888;}
+.issText {font-size: 1em; padding: .4em 1em; margin-bottom:1em;  width: 75%;}
+
+.smallholder {
+	border: 1px solid #1c94c4;
+	margin: 5px;
+	}
+
+.omwidgeheader {
+    background-color:#b0c4de;
+    padding:5px;
+    color:#fdf5ce;
+  }
+.toolholder {
+	height:500px; 
+	width:95%;
+	float:left;
+	border: 1px solid #1c94c4;
+	padding: 5px;
+	margin:10px;
+	}
+
+.ui-accordion-header {opacity:.9}
+.ui-accordion-content {border: 1px solid #fbd850; background:white;opacity:.9}
+
+.ui-autocomplete {
+    max-height: 10em;
+    overflow-y: auto;
+    /* prevent horizontal scrollbar */
+    overflow-x: auto;
+    background:white;
+    border: 1px solid #fbd850;
+  }
+
+.ui-autocomplete a {font-style:italic;color:#1c94c4;}
+
+  /* IE 6 doesn't support max-height
+   * we use height instead, but this forces the menu to always be this tall
+   */
+  * html .ui-autocomplete {
+    height: 100px;
+  }

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+	<meta charset="utf-8">
+	<title>Outcome Tracker</title>
+    <link rel="stylesheet" type="text/css" href="http://sulincdesign.com/ocm/css/ui-lightness.css"/>
+	<link rel="stylesheet" type="text/css" href="css/OutTrack.css"/>
+	
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
+
+    <script type="text/javascript" src="js/patientlist.js"></script>
+	<script type="text/javascript" src="js/intmgr.js"></script>
+
+</head>
+
+<body>
+
+	<!--div id='header' class="ui-widget-header" style='overflow:auto;'-->
+	<div id='header'>
+		<div id='headerleft' style="width:50%; float:left; margin-left:10px">
+			<h1>Outcome Tracker</h1>
+		</div>
+ 
+		<div id="userheaderright"  style="float:right;margin-right:20px;padding:10px; display:none;">
+			<span id="membername" style="margin-right:10px;color:#fbcb09;font-size:20px;vertical-align:middle"></span>
+			<span id="memberimg"></span>
+		</div>
+ 
+		<div id="loginheaderright" style="float:right;margin-right:20px;padding:10px; display:none">
+			<a href="http://localhost/weblamp442/IntMgr/Src/intmgrtest.php"><button class="funcbutt">Log In/Register</button></a>
+		</div>
+	</div>
+	
+	<div style='height:90%; width:99%; opacity:.5; background:url(http://sulincdesign.com/ocm/images/healthcare2.jpg);background-size:100% 100%; background-repeat:no-repeat;z-index:-5;position:absolute'></div>
+
+	<div id='loginscreen' style='display:none;padding:30px;'>
+		<div id="loginleft" style="width:40%; float:left;">
+			<img style="width:450px; height:400px; vertical-align:middle; padding:.6em;" src="css/titlepage.png"/>
+		</div>
+		<div id="loginright" style="width:40%;float:right;margin:30px; margin-top:130px">
+			<h1 style="color:#1c94c4">Integration Manager is a tool that allows associates to staff, spec, test, and track issues on projects across our client base </h1>
+		</div>
+	</div>
+	
+
+	<div id='userscreen' style='height:85%;width:100%;display:none;z-index:5;'>		
+	    <div id="left" style='height:100%; width:50%; float:left;'>
+			<div id='fullsection' style='height:100%; width:90%;margin:auto;'>
+
+			</div>
+		</div>
+		<div id='right' style='height:100%; width:40%; float:right'>
+			<div id='top' style='height:50%; width:90%;margin:auto'>
+			   <div><h2>My Schedule:</h2></div>
+			   <div id="taskList" style='height:90%; overflow:auto; white-space: nowrap;'></div>
+			</div>
+			<div id='bottom' style='height:50%; width:90%;margin:auto'>
+			   <div style='height:10%;'><h2>My Groups:</h2></div>
+			   <div id="issuelist" style='height:90%; overflow:auto; white-space: nowrap;'></div>
+			</div>
+		</div>
+	</div>
+
+
+<div style="display:none">
+
+  <!--Start of Condition Dialog-->
+  <div id="dialog-proj"> 
+  
+    <!--Start of Diagnosis Section-->
+    <div style='width:33%; float:left;'>
+        <div id='diagdiv' class='ui-corner-all smallholder'>
+	       <div class='ui-corner-top omwidgeheader'>
+	          <span>Diagnoses</span>
+	          <span class='newItemText'>+Add New</span>
+	       </div>
+	       <div id='diagsearch' class="ui-state-default" style="font-size:.75em; display:none;">
+				<label for="diags">New Diagnosis: </label>
+				<input id="diags" />
+				<!--span id='savediag' class='savebutt' style='display:none'>Save</span-->
+				<span id='savediag' class='savebutt ui-icon ui-icon-disk' style='float:right; display:none;'></span>
+	        </div>
+	       <div id='diaglist' style='height:10em;overflow:auto'>
+		   </div>
+        </div>
+    </div>
+    <!--End of Diagnosis Section-->
+
+
+    <!--Start of Procedure Section-->
+    <div style='width:33%; float:left;'>
+        <div id='procdiv' class='ui-corner-all smallholder'>
+	       <div class='ui-corner-top omwidgeheader'>
+	          <span>Procedures</span>
+	          <span class='newItemText'>+Add New</span>
+	       </div>
+	       <div id='procsearch' class="ui-state-default" style="font-size:.75em; display:none;">
+				<label for="procs">New Procedure: </label>
+				<input id="procs" />
+				<span id='saveproc' class='savebutt ui-icon ui-icon-disk' style='float:right; display:none;'></span>
+	        </div>
+	       <div id='proclist' style='height:10em;overflow:auto'>
+		   </div>
+        </div>
+    </div>
+    <!--End of Procedure Section-->
+	
+	
+    <!--Start of Provider Section-->
+    <div style='width:33%; float:left;'>
+        <div id='provdiv' class='ui-corner-all smallholder'>
+	       <div class='ui-corner-top omwidgeheader'>
+	          <span>Providers</span>
+	          <span class='newItemText'>+Add New</span>
+	       </div>
+	       <div id='provsearch' class="ui-state-default" style="font-size:.75em; display:none;">
+				<label for="provs">Provider: </label>
+				<input id="provs" /><br/>
+				<label for="provtypes">Type: </label>
+				<input id="provtypes" />
+				<span id='saveprov' class='savebutt ui-icon ui-icon-disk' style='float:right; display:none;'></span>
+	        </div>
+	       <div id='provlist' style='height:10em;overflow:auto'>
+
+		   </div>
+        </div>
+    </div>
+    <!--End of Provider Section-->
+    
+    
+   <!--Start of Visit Section-->
+    <div style='width:99%; float:left;'>
+        <div class='ui-corner-all smallholder'>
+	       <div class='ui-corner-top omwidgeheader'>
+	          <span>Visits</span>
+	       </div>
+	       <div id= 'visitlist' style='height:12em;overflow:auto'>
+		   </div>
+        </div>
+    </div>
+    <!--End of Visit Section-->
+    
+	 
+  </div>
+  <!--    End of Condition Dialog    -->
+
+
+  
+  <div id="dialog-cond">
+		<label for="newcond">Condition: </label>
+		<input id="newcond" />
+		<button id='savecond' class='savebutt' style='float:right;'>Save</button>
+  </div>  
+  
+  
+  <div id="dialog-issues" title="">
+	<form name="issueform" id="issueform">
+	<fieldset>
+		<label for="priority">Priority</label>
+		<input type="number" name="priority" id="priority" class="required text ui-widget-content ui-corner-all" />
+		<label for="detail">Issue Description</label>
+		<textarea name="detail" id="detail" value="" class="ui-corner-all"></textarea>
+	</fieldset>
+	</form>
+  </div>
+
+  <div id="dialog-issuetext" title="">
+    <div id="issDesc" class="issueHeader"></div>
+    <div id="issueText" style="height:310px; overflow:auto"></div>
+	<form name="issueTextform" id="issueTextform">
+	<fieldset>
+		<label for="issText">Message:</label>
+		<input type="textarea" name="issText" id="issText" value="" class="issText ui-widget-content ui-corner-all" />
+		<input class="funcbutt" value="Reply" type="submit" />
+	</fieldset>
+	</form>
+  </div>
+
+  
+   <div id="dialog-task" title="Task View">
+	<div id="tasktable"></div>
+  </div>
+  
+</div>
+
+
+</body>
+</html>
