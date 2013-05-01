@@ -105,7 +105,7 @@ $(document).ready(function() {
             logonobj.password=$( "#password" ).val();
             var reqbody = JSON.stringify(logonobj);
 			//console.log (reqbody);
-			$.post("http://localhost/weblamp443/OutcomeTracker/login.php", reqbody)
+			$.post("http://localhost/weblamp443/OutcomeTracker/Src/login.php", reqbody)
 			  .done(function(data) {
 			    //console.log("REPLY-"+loginrep);
 			    //var loginrep = $.parseJSON(data);
@@ -120,7 +120,7 @@ $(document).ready(function() {
 	 });
 	 
 	 $( "#logoutbutt" ).on ('click',function() {
-        	$.get("http://localhost/weblamp443/OutcomeTracker/logout.php");
+        	$.post("http://localhost/weblamp443/OutcomeTracker/Src/logout.php");
 	        alert ("You're Logged Out");
 	        showLoginPage();
 	 });
@@ -225,9 +225,6 @@ function loginuser(meminfo){
 	$('#userscreen').data('userid', memid).show();
 	$('#userheaderright').show();
 
-	//displayUserInfo(memid);
-	
-	
 	imglink = "imgs/silhouette96.png"
 	$('#membername').html(userobj.prefix+" "+userobj.firstname+ " "+userobj.lastname);
 	if (userobj.picture) {

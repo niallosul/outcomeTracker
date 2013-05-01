@@ -18,19 +18,18 @@
 	<!--div id='header' class="ui-widget-header" style='overflow:auto;'-->
 	<div id='header'>
 		<!--div id='headerleft' style="width:50%; float:left; margin-left:10px"-->
-		<div id='headerleft' style="margin-left:10px"-->
+		<div id='headerleft' style="padding-left:10px;">
 			<h1>Outcome Tracker</h1>
 		</div>
  
-		<div id="userheaderright"  style="float:right;margin-right:20px;padding:10px; display:none;">
+		<div id="userheaderright"  style="float:right;padding:10px; display:none;">
 			<span id="membername" style="margin-right:10px;color:white;font-size:1.8em;vertical-align:middle"></span>
 			<span id="memberimg"></span>
 			<span id="logoutbutt" class="ui-state-default ui-corner-all tasklink" style='font-size:.7em; padding:4px'>Logout</span>
 		</div>
  
-		<div id="loginheaderright" style="float:right;margin-right:20px;padding:10px; display:none">
-			<div class="menu_login_container">
-			<table>
+		<div id="loginheaderright" style="display:none">
+			<table id="logintable">
 				<tr>
 					<td><label for="username">Username</label></td>
 					<td><label for="password">Password</label></td>
@@ -41,7 +40,6 @@
 					<td><button id="octloginbutt" class="funcbutt">Log In</button></td>
 				</tr>
 			</table>
-			</div>
 		</div>
 	</div>
 	
@@ -75,7 +73,7 @@
   <div id="dialog-proj"> 
   
     <!--Start of Diagnosis Section-->
-    <div style='width:33%; float:left;'>
+    <div class='secholder'>
         <div id='diagdiv' class='ui-corner-all smallholder'>
 	       <div class='ui-corner-top omwidgeheader'>
 	          <span>Diagnoses</span>
@@ -87,15 +85,14 @@
 				<!--span id='savediag' class='savebutt' style='display:none'>Save</span-->
 				<span id='savediag' class='savebutt ui-icon ui-icon-disk' style='float:right; display:none;'></span>
 	        </div>
-	       <div id='diaglist' style='height:10em;overflow:auto'>
-		   </div>
+	       <div id='diaglist' class='listholder'></div>
         </div>
     </div>
     <!--End of Diagnosis Section-->
 
 
     <!--Start of Procedure Section-->
-    <div style='width:33%; float:left;'>
+    <div class='secholder'>
         <div id='procdiv' class='ui-corner-all smallholder'>
 	       <div class='ui-corner-top omwidgeheader'>
 	          <span>Procedures</span>
@@ -106,15 +103,14 @@
 				<input id="procs" />
 				<span id='saveproc' class='savebutt ui-icon ui-icon-disk' style='float:right; display:none;'></span>
 	        </div>
-	       <div id='proclist' style='height:10em;overflow:auto'>
-		   </div>
+	       <div id='proclist' class='listholder'></div>
         </div>
     </div>
     <!--End of Procedure Section-->
 	
 	
     <!--Start of Provider Section-->
-    <div style='width:33%; float:left;'>
+    <div class='secholder'>
         <div id='provdiv' class='ui-corner-all smallholder'>
 	       <div class='ui-corner-top omwidgeheader'>
 	          <span>Providers</span>
@@ -127,22 +123,19 @@
 				<input id="provtypes" />
 				<span id='saveprov' class='savebutt ui-icon ui-icon-disk' style='float:right; display:none;'></span>
 	        </div>
-	       <div id='provlist' style='height:10em;overflow:auto'>
-
-		   </div>
+	       <div id='provlist' class='listholder'></div>
         </div>
     </div>
     <!--End of Provider Section-->
     
     
    <!--Start of Visit Section-->
-    <div style='width:99%; float:left;'>
+    <div>
         <div class='ui-corner-all smallholder'>
 	       <div class='ui-corner-top omwidgeheader'>
 	          <span>Visits</span>
 	       </div>
-	       <div id= 'visitlist' style='height:12em;overflow:auto'>
-		   </div>
+	       <div id= 'visitlist' class='listholder'></div>
         </div>
     </div>
     <!--End of Visit Section-->

@@ -7,11 +7,45 @@ fieldset { padding:0; border:0; margin-top:25px; }
 
 label {font-size: .8em; font-style:italic;color:#888888;}
 
-@media (min-width: 600px) {
+@media (min-width: 700px) {
 
-   div#right, div#left, div#headerleft{
+   div#right, div#left, div#headerleft, div#loginheaderright{
 		float: left;
-		width: 50%;
+		width: 49%;
+	}
+   table#logintable{
+		float:right;
+	}
+	div.secholder {
+		width:33%;
+		float:left;
+	}
+	div.listholder {
+		height:9em;
+		overflow:auto;
+	}
+	
+}
+
+@media (max-width: 699px) {
+
+   div#header, div#loginheaderright{
+       text-align:center;
+   }
+   table#logintable{
+		width: 60%;
+		margin:auto;
+	}
+	
+	div#userheaderright{
+	    width:90%;
+		margin:auto;
+		font-size:.8em;
+	}
+
+	div.listholder {
+		height:3em;
+		overflow:auto;
 	}
 }
 
