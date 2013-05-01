@@ -9,7 +9,6 @@
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
 
-    <script type="text/javascript" src="js/patientlist.js"></script>
 	<script type="text/javascript" src="js/intmgr.js"></script>
 
 </head>
@@ -18,46 +17,53 @@
 
 	<!--div id='header' class="ui-widget-header" style='overflow:auto;'-->
 	<div id='header'>
-		<div id='headerleft' style="width:50%; float:left; margin-left:10px">
+		<!--div id='headerleft' style="width:50%; float:left; margin-left:10px"-->
+		<div id='headerleft' style="margin-left:10px"-->
 			<h1>Outcome Tracker</h1>
 		</div>
  
 		<div id="userheaderright"  style="float:right;margin-right:20px;padding:10px; display:none;">
-			<span id="membername" style="margin-right:10px;color:#fbcb09;font-size:20px;vertical-align:middle"></span>
+			<span id="membername" style="margin-right:10px;color:white;font-size:1.8em;vertical-align:middle"></span>
 			<span id="memberimg"></span>
+			<span id="logoutbutt" class="ui-state-default ui-corner-all tasklink" style='font-size:.7em; padding:4px'>Logout</span>
 		</div>
  
 		<div id="loginheaderright" style="float:right;margin-right:20px;padding:10px; display:none">
-			<a href="http://localhost/weblamp442/IntMgr/Src/intmgrtest.php"><button class="funcbutt">Log In/Register</button></a>
+			<div class="menu_login_container">
+			<table>
+				<tr>
+					<td><label for="username">Username</label></td>
+					<td><label for="password">Password</label></td>
+				</tr>
+				<tr>
+					<td><input type="text" class="inputtext" name="username" id="username" value=""/></td>
+					<td><input type="password" class="inputtext" name="password" id="password" /></td>
+					<td><button id="octloginbutt" class="funcbutt">Log In</button></td>
+				</tr>
+			</table>
+			</div>
 		</div>
 	</div>
 	
 	<div style='height:90%; width:99%; opacity:.5; background:url(http://sulincdesign.com/ocm/images/healthcare2.jpg);background-size:100% 100%; background-repeat:no-repeat;z-index:-5;position:absolute'></div>
 
 	<div id='loginscreen' style='display:none;padding:30px;'>
-		<div id="loginleft" style="width:40%; float:left;">
-			<img style="width:450px; height:400px; vertical-align:middle; padding:.6em;" src="css/titlepage.png"/>
-		</div>
-		<div id="loginright" style="width:40%;float:right;margin:30px; margin-top:130px">
-			<h1 style="color:#1c94c4">Integration Manager is a tool that allows associates to staff, spec, test, and track issues on projects across our client base </h1>
+		<div id="loginright" style="width:40%;float:right;margin:30px; margin-top:20px">
+			<h1 style="color:#1c94c4">Outcome Tracker is a tool that allows surgeons to track patient outcomes </h1>
 		</div>
 	</div>
 	
 
 	<div id='userscreen' style='height:85%;width:100%;display:none;z-index:5;'>		
-	    <div id="left" style='height:100%; width:50%; float:left;'>
-			<div id='fullsection' style='height:100%; width:90%;margin:auto;'>
-
-			</div>
+	    <!--div id="left" style='height:100%; width:50%; float:left;'-->
+	    <div id="left" style='height:50%;'>
+			<div id='fullsection' style='height:100%; width:90%;margin:auto;'></div>
 		</div>
-		<div id='right' style='height:100%; width:40%; float:right'>
-			<div id='top' style='height:50%; width:90%;margin:auto'>
+		<!--div id='right' style='height:100%; width:40%; float:right'-->
+		<div id='right' style='height:50%;'>
+			<div id='top' style='height:100%; width:90%;margin:auto'>
 			   <div><h2>My Schedule:</h2></div>
 			   <div id="taskList" style='height:90%; overflow:auto; white-space: nowrap;'></div>
-			</div>
-			<div id='bottom' style='height:50%; width:90%;margin:auto'>
-			   <div style='height:10%;'><h2>My Groups:</h2></div>
-			   <div id="issuelist" style='height:90%; overflow:auto; white-space: nowrap;'></div>
 			</div>
 		</div>
 	</div>

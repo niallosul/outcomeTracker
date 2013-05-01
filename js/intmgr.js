@@ -2,22 +2,18 @@
 $apiUrlBase = "http://localhost/weblamp443/OutcomeTracker/api/";
 $(document).ready(function() {
 
-	$("#dialog:ui-dialog").dialog( "destroy" );
-	//$.ajaxSetup ({cache: false});
+	//$("#dialog:ui-dialog").dialog( "destroy" );
 
-		
-	//$.get("http://localhost/weblamp442/IntMgr/api/session/userid",
-	$.get($apiUrlBase+"users/4",
+	$.get($apiUrlBase+"session/userinfo",
 		function(data){
 		if (data) {
-		//console.log(data[0].id);
-			loginuser (data[0].id);
+		    console.log(data);
+			loginuser (data);
 		}	
 		else {
 			showLoginPage();
 		}
-	},"json");
-
+	});
 
 	var wWidth = $(window).width();
     var wHeight = $(window).height();
@@ -64,7 +60,7 @@ $(document).ready(function() {
              doctypelist[doctypelist.length-1].label=data[i].value;
              }
        }
-       console.log (doctypelist);
+       //console.log (doctypelist);
        creatautocomplete($('#provtypes'), doctypelist);
     });
    //-------------------------------------------------
@@ -102,6 +98,33 @@ $(document).ready(function() {
          $( "#provsearch").slideToggle();
 	 });
 	 
+
+	 $( "#octloginbutt" ).on ('click',function() {
+        	var logonobj = new Object();
+            logonobj.username=$( "#username" ).val();
+            logonobj.password=$( "#password" ).val();
+            var reqbody = JSON.stringify(logonobj);
+			//console.log (reqbody);
+			$.post("http://localhost/weblamp443/OutcomeTracker/login.php", reqbody)
+			  .done(function(data) {
+			    //console.log("REPLY-"+loginrep);
+			    //var loginrep = $.parseJSON(data);
+  			    //console.log(loginrep);
+  			    if (data == "No User found") {
+			      alert ("Invalid Login");
+		         }	
+		        else {
+			      loginuser (data);
+		      }
+		   });
+	 });
+	 
+	 $( "#logoutbutt" ).on ('click',function() {
+        	$.get("http://localhost/weblamp443/OutcomeTracker/logout.php");
+	        alert ("You're Logged Out");
+	        showLoginPage();
+	 });
+
 	 $( "#dialog-cond" ).find('.savebutt').on ('click',function() {
 	     var patinfo = $('#dialog-cond').data('patinfo');
          var condobj = new Object();
@@ -123,7 +146,7 @@ $(document).ready(function() {
 	        });
 		 });        
 	 });
-	 
+
 	 $( '#savediag').on('click',function() {
          var diagobj = new Object();
          diagobj.condid=$('#diags').data('condid');
@@ -171,18 +194,10 @@ $(document).ready(function() {
          $( '#provs' ).val('');
          $( "#provsearch").slideToggle();
 	 });
+ 
 });
 //-----------------------------------------------------------
 
-
-//-----------------------------------------------------------
-function logoutuser() {
-	$.get("http://sulincdesign.com/cim/ws/endsession.php");
-	alert ("You're Logged Out");
-	showLoginPage();
-	$("#admindiv").hide();
-}
-//-----------------------------------------------------------
 
 
 //-----------------------------------------------------------
@@ -199,14 +214,26 @@ function showLoginPage() {
 
 
 //-----------------------------------------------------------
-function loginuser(memid){
+function loginuser(meminfo){
+    var userobj = $.parseJSON(meminfo);
+    console.log (userobj);
+    var memid = userobj.id
+    
 	$('#loginscreen').hide();
 	$('#loginheaderright').hide();
 	
 	$('#userscreen').data('userid', memid).show();
 	$('#userheaderright').show();
 
-	displayUserInfo(memid);
+	//displayUserInfo(memid);
+	
+	
+	imglink = "imgs/silhouette96.png"
+	$('#membername').html(userobj.prefix+" "+userobj.firstname+ " "+userobj.lastname);
+	if (userobj.picture) {
+	  imglink = userobj.picture;
+	}
+	$('#memberimg').html('<img style="vertical-align:middle; padding:.6em; height:30px; width:30px" src="'+imglink+'"/>');
 	//displayTasks();
 	displayPatients(memid);
 
@@ -214,21 +241,6 @@ function loginuser(memid){
 //-----------------------------------------------------------
 	
 
-//-----------------------------------------------------------
-function displayUserInfo(memid){
-    var userHTML = "";
-	$.get($apiUrlBase+"users/"+memid,
-	function(data){
-		console.log (data);
-		imglink = "imgs/silhouette96.png"
-		$('#membername').html(data[0].prefix+" "+data[0].firstname+ " "+data[0].lastname);
-		if (data.picture) {
-		  imglink = data.picture;
-		}
-		$('#memberimg').html('<img style="vertical-align:middle; padding:.6em; height:30px; width:30px" src="'+imglink+'"/>');
-	},"json");
-}
-//-----------------------------------------------------------
 
 
 //-----------------------------------------------------------
@@ -290,9 +302,6 @@ function displayPatients(memid){
 	});
 	
 	patListHTML.on('click', '.tasklink', displayCondDetails);
-	//patListHTML.find('.tasklink').on ('click',function() {
-    //    displayCondDetails($(this).data('condinfo'), $(this).data('patinfo'));
-	// });	
     patListHTML.on('click', '.newItemText', displayNewCondForm);	
 }
 //-----------------------------------------------------------
@@ -306,7 +315,7 @@ function displayDiags(condId){
 	var diagListHTML = $('<div></div>');
 	$.get($apiUrlBase+"conddiags/"+condId,
     function(data){
-       console.log (data);
+       //console.log (data);
        for (i=0; i<data.length; i++) {
           diagListHTML.append($('<div class="ui-state-default ui-corner-all tasklink" style="font-size:.75em"></div>')
 								.data('condid',data[i].id)
@@ -327,7 +336,7 @@ function displayProcs(condId){
 	var procListHTML = $('<div></div>');
 	$.get($apiUrlBase+"condprocs/"+condId,
     function(data){
-       console.log (data);
+       //console.log (data);
        for (i=0; i<data.length; i++) {
           procListHTML.append($('<div class="ui-state-default ui-corner-all tasklink" style="font-size:.75em"></div>')
 								.data('condid',data[i].id)
@@ -345,7 +354,7 @@ function displayProvs(condId){
 	var procListHTML = $('<div></div>');
 	$.get($apiUrlBase+"condprovs/"+condId,
     function(data){
-       console.log (data);
+       //console.log (data);
        for (i=0; i<data.length; i++) {
           var provdisp = data[i].prefix+" "+data[i].firstname+" "+data[i].lastname;
           procListHTML.append($('<div class="ui-state-default ui-corner-all tasklink" style="font-size:.75em"></div>')
@@ -355,6 +364,7 @@ function displayProvs(condId){
        }
        $('#provlist').html(procListHTML);
    }, "json");	
+
 }
 //-----------------------------------------------------------
 
