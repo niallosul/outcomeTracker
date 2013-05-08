@@ -83,7 +83,7 @@
 				<label for="diags">New Diagnosis: </label>
 				<input id="diags" />
 				<!--span id='savediag' class='savebutt' style='display:none'>Save</span-->
-				<span id='savediag' class='savebutt ui-icon ui-icon-disk' style='float:right; display:none;'></span>
+				<span id='savediag' class='savebutt' style='float:right; display:none;'>Save</span>
 	        </div>
 	       <div id='diaglist' class='listholder'></div>
         </div>
@@ -101,7 +101,7 @@
 	       <div id='procsearch' class="ui-state-default" style="font-size:.75em; display:none;">
 				<label for="procs">New Procedure: </label>
 				<input id="procs" />
-				<span id='saveproc' class='savebutt ui-icon ui-icon-disk' style='float:right; display:none;'></span>
+				<span id='saveproc' class='savebutt' style='float:right; display:none;'>Save</span>
 	        </div>
 	       <div id='proclist' class='listholder'></div>
         </div>
@@ -121,7 +121,7 @@
 				<input id="provs" /><br/>
 				<label for="provtypes">Type: </label>
 				<input id="provtypes" />
-				<span id='saveprov' class='savebutt ui-icon ui-icon-disk' style='float:right; display:none;'></span>
+				<span id='saveprov' class='savebutt' style='float:right; display:none;'>Save</span>
 	        </div>
 	       <div id='provlist' class='listholder'></div>
         </div>
@@ -130,11 +130,19 @@
     
     
    <!--Start of Visit Section-->
-    <div>
-        <div class='ui-corner-all smallholder'>
+    <div style='float:left; width:100%'>
+        <div id='visitdiv' class='ui-corner-all smallholder'>
 	       <div class='ui-corner-top omwidgeheader'>
 	          <span>Visits</span>
+	          <span class='newItemText'>+Add New</span>
 	       </div>
+	       <div id='visitsearch' class="ui-state-default" style="font-size:.75em; display:none;">
+				<label for="visittypes">Visit Type: </label>
+				<select id="visittypes"></select>
+				<label for="visitdate">Date: </label>
+				<input id="visitdate" />
+				<span id='savevisit' class='savebutt' style='float:right;'>Save</span>
+	        </div>
 	       <div id= 'visitlist' class='listholder'></div>
         </div>
     </div>
@@ -151,35 +159,6 @@
 		<input id="newcond" />
 		<button id='savecond' class='savebutt' style='float:right;'>Save</button>
   </div>  
-  
-  
-  <div id="dialog-issues" title="">
-	<form name="issueform" id="issueform">
-	<fieldset>
-		<label for="priority">Priority</label>
-		<input type="number" name="priority" id="priority" class="required text ui-widget-content ui-corner-all" />
-		<label for="detail">Issue Description</label>
-		<textarea name="detail" id="detail" value="" class="ui-corner-all"></textarea>
-	</fieldset>
-	</form>
-  </div>
-
-  <div id="dialog-issuetext" title="">
-    <div id="issDesc" class="issueHeader"></div>
-    <div id="issueText" style="height:310px; overflow:auto"></div>
-	<form name="issueTextform" id="issueTextform">
-	<fieldset>
-		<label for="issText">Message:</label>
-		<input type="textarea" name="issText" id="issText" value="" class="issText ui-widget-content ui-corner-all" />
-		<input class="funcbutt" value="Reply" type="submit" />
-	</fieldset>
-	</form>
-  </div>
-
-  
-   <div id="dialog-task" title="Task View">
-	<div id="tasktable"></div>
-  </div>
   
 </div>
 

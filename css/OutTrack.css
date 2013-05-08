@@ -7,7 +7,7 @@ fieldset { padding:0; border:0; margin-top:25px; }
 
 label {font-size: .8em; font-style:italic;color:#888888;}
 
-@media (min-width: 700px) {
+@media (min-width: 981px) {
 
    div#right, div#left, div#headerleft, div#loginheaderright{
 		float: left;
@@ -21,13 +21,15 @@ label {font-size: .8em; font-style:italic;color:#888888;}
 		float:left;
 	}
 	div.listholder {
-		height:9em;
+		height:10em;
 		overflow:auto;
 	}
 	
 }
 
-@media (max-width: 699px) {
+@media (max-width: 980px) {
+   
+   body{ font-size:2em}
 
    div#header, div#loginheaderright{
        text-align:center;
@@ -44,7 +46,7 @@ label {font-size: .8em; font-style:italic;color:#888888;}
 	}
 
 	div.listholder {
-		height:3em;
+		height:10em;
 		overflow:auto;
 	}
 }

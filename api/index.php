@@ -91,6 +91,24 @@ $app->post('/condprov', function () use($app, $userDAO){
     echo ($userDAO->addcondprov($bodyobj->condid, $bodyobj->provtype, $bodyobj->provid));
  });
 
+
+// Get Condition visits 
+$app->get('/condvisits/:id', function ($id) use($userDAO){
+    echo (json_encode($userDAO->getcondvisits($id))); 
+});
+
+//Post new Condition visit
+$app->post('/condvisit', function () use($app, $userDAO){
+    $bodyobj = json_decode ($app->request()->getBody());
+    echo ($userDAO->addcondvisit($bodyobj->condid, $bodyobj->provtype, $bodyobj->provid));
+ });
+
+// Get Visits Metrics  
+$app->get('/visitmetrics/:id', function ($id) use($userDAO){
+    echo (json_encode($userDAO->getvisitmetrics($id))); 
+});
+  
+ 
 // PUT route
 $app->put('/put', function () {
     echo 'This is a PUT route';

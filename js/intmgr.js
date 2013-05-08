@@ -1,23 +1,21 @@
 //-------------------------------------------------
-$apiUrlBase = "http://localhost/weblamp443/OutcomeTracker/api/";
+$apiUrlBase = "api/";
 $(document).ready(function() {
 
-	//$("#dialog:ui-dialog").dialog( "destroy" );
-
-	$.get($apiUrlBase+"session/userinfo",
-		function(data){
-		if (data) {
-		    console.log(data);
-			loginuser (data);
-		}	
-		else {
-			showLoginPage();
-		}
-	});
+     $.get($apiUrlBase+"session/userinfo", function(data) {
+           if (data){
+  			loginuser (data);  
+  		   }
+  		   else {
+  		     showLoginPage();
+  		   }
+  		})
+    .error(function() { showLoginPage(); })
 
 	var wWidth = $(window).width();
     var wHeight = $(window).height();
 
+//alert (wWidth);
   
     //---------- Load all Reference data ----------
 	$.getJSON($apiUrlBase+"diags",
@@ -59,6 +57,9 @@ $(document).ready(function() {
              doctypelist.push(data[i]);
              doctypelist[doctypelist.length-1].label=data[i].value;
              }
+          if (data[i].dataset == 'visittype'){
+             $("#visittypes").append($("<option />").val(data[i].id).text(data[i].value));
+             }      
        }
        //console.log (doctypelist);
        creatautocomplete($('#provtypes'), doctypelist);
@@ -78,12 +79,20 @@ $(document).ready(function() {
 		
 	$( "#dialog-cond" ).dialog({
 		autoOpen: false,
-		width: wWidth * 0.4,
+		width: wWidth * 0.7,
 		modal: true
 		});
 
-		
+	$( "#visitdate" ).datepicker({ 
+	     dateFormat: 'yy-mm-dd'
+	    });
+	    	
+	$( "#visitdate" ).datepicker("setDate", new Date() );
 	//----------------------------------------------------------------
+
+
+
+
 
      //Add event Handlers
      $( "#diagdiv" ).find('.newItemText').on ('click',function() {
@@ -98,18 +107,22 @@ $(document).ready(function() {
          $( "#provsearch").slideToggle();
 	 });
 	 
-
+	 $( "#visitdiv" ).find('.newItemText').on ('click',function() {
+         $( "#visitsearch").slideToggle();
+	 });
+	 
+	 
 	 $( "#octloginbutt" ).on ('click',function() {
         	var logonobj = new Object();
             logonobj.username=$( "#username" ).val();
             logonobj.password=$( "#password" ).val();
             var reqbody = JSON.stringify(logonobj);
 			//console.log (reqbody);
-			$.post("http://localhost/weblamp443/OutcomeTracker/Src/login.php", reqbody)
+			$.post("Src/login.php", reqbody)
 			  .done(function(data) {
 			    //console.log("REPLY-"+loginrep);
 			    //var loginrep = $.parseJSON(data);
-  			    //console.log(loginrep);
+  			    console.log(data);
   			    if (data == "No User found") {
 			      alert ("Invalid Login");
 		         }	
@@ -120,7 +133,9 @@ $(document).ready(function() {
 	 });
 	 
 	 $( "#logoutbutt" ).on ('click',function() {
-        	$.post("http://localhost/weblamp443/OutcomeTracker/Src/logout.php");
+	 	    $( "#username" ).val("");
+            $( "#password" ).val("");
+        	$.post("Src/logout.php");
 	        alert ("You're Logged Out");
 	        showLoginPage();
 	 });
@@ -133,17 +148,23 @@ $(document).ready(function() {
          var reqbody = JSON.stringify(condobj);
          $.post($apiUrlBase+"patcond", reqbody )
 			.done(function(data) {
-  			var activeacc =  $('#pat-accord').accordion( "option", "active" );
-  			displayPatients($('#userscreen').data('userid'));
-  			console.log (activeacc);
-  			$( "#newcond" ).val('');
-  			$( "#dialog-cond" ).dialog('close');
-  			//Listen for accordion completion and programatically open the previously open patient
-  			//and click the latest condition for that patient 
-  			$('#fullsection').one('dataModelChanged',function() { 
-		         $('#pat-accord').accordion( "option", "active", activeacc );
-		         $('#pat-accord').find('.condlist:eq('+activeacc+')').find('.tasklink:eq(0)').trigger('click');
-	        });
+			   console.log (data);
+			   if (data == "Patient Condition Added"){
+  			      var activeacc =  $('#pat-accord').accordion( "option", "active" );
+  			      displayPatients($('#userscreen').data('userid'));
+  			      //console.log (activeacc);
+  			      $( "#newcond" ).val('');
+  			      $( "#dialog-cond" ).dialog('close');
+  			      //Listen for accordion completion and programatically open the previously open patient
+  			      //and click the latest condition for that patient 
+  			      $('#fullsection').one('dataModelChanged',function() { 
+		          $('#pat-accord').accordion( "option", "active", activeacc );
+		          $('#pat-accord').find('.condlist:eq('+activeacc+')').find('.tasklink:eq(0)').trigger('click');
+	             });
+	           }
+	           else {
+	              alert (data);
+	           }  
 		 });        
 	 });
 
@@ -180,12 +201,12 @@ $(document).ready(function() {
 	 
 	 
 	 $( '#saveprov').on('click',function() {
-         var procobj = new Object();
-         procobj.condid=$('#provs').data('condid');
-         procobj.provid=$('#provs').data('dbid');
-         procobj.provtype=$('#provtypes').val();
-         console.log (procobj);
-         var reqbody = JSON.stringify(procobj);
+         var reqobj = new Object();
+         reqobj.condid=$('#provs').data('condid');
+         reqobj.provid=$('#provs').data('dbid');
+         reqobj.provtype=$('#provtypes').val();
+         console.log (reqobj);
+         var reqbody = JSON.stringify(reqobj);
          $.post($apiUrlBase+"condprov", reqbody )
 			.done(function(data) {
   			alert(data);
@@ -193,6 +214,21 @@ $(document).ready(function() {
 		 });
          $( '#provs' ).val('');
          $( "#provsearch").slideToggle();
+	 });
+	 
+	 
+	 $( '#savevisit').on('click',function() {
+         var reqobj = new Object();
+         reqobj.visittype=$("#visittypes").find(":selected").text();
+         reqobj.visitdate=$("#visitdate").val();
+         console.log (reqobj);
+         //var reqbody = JSON.stringify(reqobj);
+         //$.post($apiUrlBase+"condprov", reqbody )
+		//	.done(function(data) {
+  		//	alert(data);
+  		//	displayProvs($('#provs').data('condid'));
+		// });
+         $( "#visitsearch").slideToggle();
 	 });
  
 });
@@ -215,10 +251,9 @@ function showLoginPage() {
 
 //-----------------------------------------------------------
 function loginuser(meminfo){
-    var userobj = $.parseJSON(meminfo);
-    console.log (userobj);
-    var memid = userobj.id
-    
+    var userobj = $.parseJSON(meminfo); 
+    var memid = userobj.id;
+    //console.log (userobj);
 	$('#loginscreen').hide();
 	$('#loginheaderright').hide();
 	
@@ -244,7 +279,7 @@ function loginuser(meminfo){
 function displayPatients(memid){
     var patListHTML=$('<div></div>')
         .append($('<h2></h2>').text('Patient List')
-		   .append($('<input></input>').addClass('searchbox')));
+		   .append($('<input placeholder="Patient Search.."></input>').addClass('searchbox')));
 
 	var patListAccord = $('<div id="pat-accord"></div>');
 	$.get($apiUrlBase+"getpatsbyprov/"+memid,
@@ -367,14 +402,63 @@ function displayProvs(condId){
 
 
 
+//-----------------------------------------------------------
+function displayVisits(){
+    var condId = $('#dialog-proj').data('condid');
+    console.log (condId);
+	$.get($apiUrlBase+"condvisits/"+condId,
+    function(data){
+       console.log (data);
+       var vistListHTML  = $('<div id="visit-accord"></div>');
+       for (i=0; i<data.length; i++) {
+          vistListHTML.append($('<h3></h3>').append($('<a href="#"></a>')
+								.append('<span class="patinfo">'+data[i].type+'</span>')
+								.append('<span class="patinfo">'+data[i].id+'</span>')
+								.append('<span style="float:right; font-size:.75em;">Date:'+data[i].date+'</span>')));
+		  var metricListHTML = $('<div class="metriclist"></div>').attr('id', 'visitmetrics'+data[i].id);
+		  vistListHTML.append(metricListHTML);
+		  displayMetrics (metricListHTML, data[i].id);
+		  }
+       $('#visitlist').html(vistListHTML);
+       $('#visit-accord').accordion({
+			collapsible: true,
+			autoHeight:false,
+			active:false
+		});
+   }, "json");	
+
+}
+//-----------------------------------------------------------
+
+//-----------------------------------------------------------
+function displayMetrics (destdiv,visitId){
+    
+	$.getJSON($apiUrlBase+"visitmetrics/"+visitId,
+    function(data){
+       //console.log (data);
+          
+       for (i=0; i<data.length; i++) {
+          destdiv.append($('<div class="ui-state-default ui-corner-all tasklink" style="font-size:.75em"></div>')
+								.data('condid',data[i].id)
+								.append('<span>'+data[i].description+' - '+data[i].value+'</span>'));
+       }
+
+   });
+
+}
+//-----------------------------------------------------------
+
+
 
 //-----------------------------------------------------------
 function displayCondDetails(){
     var condinfo = $(this).data('condinfo');
     var patinfo = $(this).data('patinfo');
+    $('#dialog-proj').data('condid',condinfo.id);
 	displayDiags(condinfo.id);
 	displayProcs(condinfo.id);
 	displayProvs(condinfo.id);
+	displayVisits();
 	var diagheader = condinfo.description+" - "+patinfo.firstname+" "+patinfo.lastname;
 	$('#dialog-proj').dialog('option', 'title', diagheader);
 	$('#dialog-proj').dialog('open');

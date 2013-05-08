@@ -114,7 +114,50 @@ use \PDO as PDO;
         $resarr = $repstmt->fetchAll(PDO::FETCH_OBJ);
 	    return ($resarr[0]->repstring);
     } 
-    
+ 
+ 
+ 
+    //Returns visits by condition id
+    public function getcondvisits($condid) {
+        $sql = "SELECT cv.* ".
+        	   "FROM condition_visit cv ".
+        	   "where cv.pat_cond_id =:condid ";
+    	$this->connect();
+		$stmt = $this->db->prepare($sql);
+		$stmt->bindValue(':condid', $condid, PDO::PARAM_INT);
+		$stmt->execute();
+		return($stmt->fetchAll(PDO::FETCH_OBJ));
+    }
+ 
+ 
+    //Add new condition vist
+    public function addcondvisit($condid, $provtype, $provid) {
+        $this->connect();
+		$stmt = $this->db->prepare("CALL addcondprov (:condid,:provtype,:provid, @reply)");
+		$stmt->bindValue(':provid', $provid, PDO::PARAM_INT);
+		$stmt->bindValue(':condid', $condid, PDO::PARAM_INT);
+		$stmt->bindValue(':provtype', $provtype, PDO::PARAM_STR);
+        $stmt->execute();
+        $repstmt = $this->db->prepare ("select @reply as repstring");
+        $repstmt->execute();
+        $resarr = $repstmt->fetchAll(PDO::FETCH_OBJ);
+	    return ($resarr[0]->repstring);
+    } 
+
+
+    //Returns metrics by visit id
+    public function getvisitmetrics($visitid) {
+        $sql = "SELECT vd.*, m.description ".
+        	   "FROM visit_details vd, metrics m ".
+        	   "WHERE vd.visitid=:visitid and m.id = vd.metricid ";
+    	$this->connect();
+		$stmt = $this->db->prepare($sql);
+		$stmt->bindValue(':visitid', $visitid, PDO::PARAM_INT);
+		$stmt->execute();
+		return($stmt->fetchAll(PDO::FETCH_OBJ));
+    }
+
+ 
     //Returns providers patients by id
     public function getpatsbyprov($id) {
         $provpatlist = array();
@@ -139,7 +182,7 @@ use \PDO as PDO;
 		return($provpatlist);
     }
 
-
+/*
     public function addpatientcond($patid, $conditiontext) {
         $this->connect();
 		$stmt = $this->db->prepare("insert into patient_condition (patient_id, description, date) values (:patid, :condtext, now())");
@@ -147,6 +190,19 @@ use \PDO as PDO;
 		$stmt->bindValue(':patid', $patid, PDO::PARAM_INT);
         $stmt->execute();
 	    return ($this->db->lastInsertId());
+	}
+*/
+
+    public function addpatientcond ($patid, $conditiontext) {
+        $this->connect();
+		$stmt = $this->db->prepare("call addpatcond (:condtext, :patid, @reply)");
+		$stmt->bindValue(':condtext', $conditiontext, PDO::PARAM_STR);
+		$stmt->bindValue(':patid', $patid, PDO::PARAM_INT);
+        $stmt->execute();
+        $repstmt = $this->db->prepare ("select @reply as repstring");
+        $repstmt->execute();
+        $resarr = $repstmt->fetchAll(PDO::FETCH_OBJ);
+	    return ($resarr[0]->repstring);
 	}
 
 
