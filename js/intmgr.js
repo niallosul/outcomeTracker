@@ -110,19 +110,33 @@ $(document).ready(function() {
 	 $( "#visitdiv" ).find('.newItemText').on ('click',function() {
          $( "#visitsearch").slideToggle();
 	 });
-	 
-	 
+
+	 $( "#closegraph" ).on ('click',function() {
+         $('#graphdiv').toggle();
+	 });
+
 	 $( "#octloginbutt" ).on ('click',function() {
         	var logonobj = new Object();
             logonobj.username=$( "#username" ).val();
             logonobj.password=$( "#password" ).val();
+
+			//-----Testing the Password Hash-----
+			var testobj = new Object();
+			var pwraw = $( "#password" ).val();
+			var pwhash = CryptoJS.SHA3(pwraw);
+			testobj.username = "TEST";
+			testobj.password = pwhash.toString(CryptoJS.enc.Hex);
+			console.log (JSON.stringify(testobj));
+			console.log (testobj.password.length);
+			//-----------------------------------
+			
             var reqbody = JSON.stringify(logonobj);
 			//console.log (reqbody);
 			$.post("Src/login.php", reqbody)
 			  .done(function(data) {
 			    //console.log("REPLY-"+loginrep);
 			    //var loginrep = $.parseJSON(data);
-  			    console.log(data);
+  			    //console.log(data);
   			    if (data == "No User found") {
 			      alert ("Invalid Login");
 		         }	
@@ -146,6 +160,7 @@ $(document).ready(function() {
          condobj.patid=patinfo.id;
          condobj.condtext=$( "#newcond" ).val();
          var reqbody = JSON.stringify(condobj);
+         console.log (reqbody);
          $.post($apiUrlBase+"patcond", reqbody )
 			.done(function(data) {
 			   console.log (data);
@@ -290,14 +305,15 @@ function displayPatients(memid){
           var patdisp = data[i]['Patient'].firstname+" "+data[i]['Patient'].lastname;
           patListAccord.append($('<h3></h3>').append($('<a href="#"></a>')
 								.append('<span class="patinfo">'+patdisp+'</span>')
-								.append('<span style="float:right; font-size:.75em;">DOB:'+data[i]['Patient'].dob+'</span>')));
-		  var condListHTML = $('<div class="condlist"></div>');
+								.append('<span style="float:right; font-size:.75em;">DOB:'+data[i]['Patient'].dob+'</span>'))
+								);
+		  var condListHTML = $('<div class="condlist"></div>').data('patinfo',data[i]['Patient']);
 		  for (j=0; j<data[i]['Conditions'].length; j++) {
 		    var cond = data[i]['Conditions'][j];
 		    //console.log (cond);
 		    condListHTML.append($('<div class="ui-state-default ui-corner-all tasklink" style="font-size:.75em"></div>')
 								.data('condinfo',cond)
-								.data('patinfo',data[i]['Patient'])
+								//.data('patinfo',data[i]['Patient'])
 								.append('<span class="ui-icon ui-icon-newwin" style="margin: 0 5px 0 0;position: absolute;left: .2em;top: 50%;margin-top: -8px;"></span>')
 								.append('<span class="patinfo">'+cond.description+'</span>')
 								.append('<span style="float:right; font-size:.75em;">Date:'+cond.date+'</span>')
@@ -349,11 +365,70 @@ function displayDiags(condId){
     function(data){
        //console.log (data);
        for (i=0; i<data.length; i++) {
-          diagListHTML.append($('<div class="ui-state-default ui-corner-all tasklink" style="font-size:.75em"></div>')
-								.data('condid',data[i].id)
-								.append('<span>'+data[i].code+' - '+data[i].description+'</span>'));
+          diagListHTML.append($('<div class="ui-state-default ui-corner-all" style="font-size:.75em; padding:.2em"></div>')
+								//.data('condid',data[i].id)
+								.append('<span>'+data[i].code+' - '+data[i].description+'</span>')
+								.append($('<span class="graphviewer tasklink" style="font-size:.3em">Graph</span>').data('diagid',data[i].diagnosis_id))
+
+								);
        }
        $('#diaglist').html(diagListHTML);
+       $('#diaglist').find( '.graphviewer' ).on ('click',function() {
+	 	    //console.log($(this).data('diagid'));
+	 	$('#graphdiv').toggle();
+	 	var chart;    
+	 	var diagcd = $(this).data('diagid');
+
+ 		$.getJSON("api/proccounts/"+diagcd,
+    	function(data){
+        console.log (data); 
+        var proclist = [];
+        for (i=0; i<data.length; i++) {
+          var proccount = parseFloat(data[i].count);
+          var elem = [];
+          elem.push (data[i].description);
+          elem.push (parseFloat(proccount));
+          proclist.push (elem)
+          }
+
+        console.log (proclist);
+           
+        chart = new Highcharts.Chart({
+            chart: {
+                renderTo: 'graphloc',
+                plotBackgroundColor: null,
+                plotBorderWidth: null,
+                plotShadow: false
+            },
+            title: {
+                text: 'Procedures Performed for Diagnosis '+diagcd
+            },
+            tooltip: {
+        	    pointFormat: '{series.name}: <b>{point.percentage}%</b>',
+            	percentageDecimals: 1
+            },
+            plotOptions: {
+                pie: {
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    dataLabels: {
+                        enabled: true,
+                        color: '#000000',
+                        connectorColor: '#000000',
+                        formatter: function() {
+                            return '<b>'+ this.point.name +'</b>: '+ this.y;
+                        }
+                    }
+                }
+            },
+            series: [{
+                type: 'pie',
+                name: 'Percentage',
+                data: proclist
+            }]
+        });
+    });
+	 });
    }, "json");
 
 }
@@ -371,7 +446,7 @@ function displayProcs(condId){
        //console.log (data);
        for (i=0; i<data.length; i++) {
           procListHTML.append($('<div class="ui-state-default ui-corner-all tasklink" style="font-size:.75em"></div>')
-								.data('condid',data[i].id)
+								//.data('condid',data[i].id)
 								.append('<span>'+data[i].code+' - '+data[i].description+'</span>'));
        }
        $('#proclist').html(procListHTML);
@@ -405,16 +480,16 @@ function displayProvs(condId){
 //-----------------------------------------------------------
 function displayVisits(){
     var condId = $('#dialog-proj').data('condid');
-    console.log (condId);
+    //console.log (condId);
 	$.get($apiUrlBase+"condvisits/"+condId,
     function(data){
-       console.log (data);
+       //console.log (data);
        var vistListHTML  = $('<div id="visit-accord"></div>');
        for (i=0; i<data.length; i++) {
           vistListHTML.append($('<h3></h3>').append($('<a href="#"></a>')
 								.append('<span class="patinfo">'+data[i].type+'</span>')
 								.append('<span class="patinfo">'+data[i].id+'</span>')
-								.append('<span style="float:right; font-size:.75em;">Date:'+data[i].date+'</span>')));
+								.append('<span style="float:right; font-size:.75em;">Date:'+data[i].visitdate+'</span>')));
 		  var metricListHTML = $('<div class="metriclist"></div>').attr('id', 'visitmetrics'+data[i].id);
 		  vistListHTML.append(metricListHTML);
 		  displayMetrics (metricListHTML, data[i].id);
@@ -453,7 +528,7 @@ function displayMetrics (destdiv,visitId){
 //-----------------------------------------------------------
 function displayCondDetails(){
     var condinfo = $(this).data('condinfo');
-    var patinfo = $(this).data('patinfo');
+    var patinfo = $(this).parents().find('.condlist').data('patinfo');
     $('#dialog-proj').data('condid',condinfo.id);
 	displayDiags(condinfo.id);
 	displayProcs(condinfo.id);
@@ -462,6 +537,7 @@ function displayCondDetails(){
 	var diagheader = condinfo.description+" - "+patinfo.firstname+" "+patinfo.lastname;
 	$('#dialog-proj').dialog('option', 'title', diagheader);
 	$('#dialog-proj').dialog('open');
+
 }
 //-----------------------------------------------------------
 
@@ -469,7 +545,8 @@ function displayCondDetails(){
 
 //-----------------------------------------------------------
 function displayNewCondForm(){
-    var patinfo = $(this).parents().find('.tasklink').data('patinfo');
+    var patinfo = $(this).parents().find('.condlist').data('patinfo');
+    //console.log (patinfo);
 	var condheader = "Add New Condition - "+patinfo.firstname+" "+patinfo.lastname;
 	$('#dialog-cond').data('patinfo',patinfo);
 	$('#dialog-cond').dialog('option', 'title', condheader);

@@ -182,16 +182,21 @@ use \PDO as PDO;
 		return($provpatlist);
     }
 
-/*
-    public function addpatientcond($patid, $conditiontext) {
-        $this->connect();
-		$stmt = $this->db->prepare("insert into patient_condition (patient_id, description, date) values (:patid, :condtext, now())");
-		$stmt->bindValue(':condtext', $conditiontext, PDO::PARAM_STR);
-		$stmt->bindValue(':patid', $patid, PDO::PARAM_INT);
-        $stmt->execute();
-	    return ($this->db->lastInsertId());
-	}
-*/
+    //Returns procedure counts by diagnosis id
+    public function getproccounts($diagid) {
+        $sql = "select p.description, count(cd.diagnosis_id) as 'count'
+				from condition_diagnosis cd
+				join condition_procedure cp on (cp.pat_cond_id = cd.pat_cond_id)
+				join procedures p on (cp.procedure_id = p.id)  
+				where cd.diagnosis_id = :diagid
+				group by cp.procedure_id; ";
+    	$this->connect();
+		$stmt = $this->db->prepare($sql);
+		$stmt->bindValue(':diagid', $diagid, PDO::PARAM_INT);
+		$stmt->execute();
+		return($stmt->fetchAll(PDO::FETCH_OBJ));
+    }
+
 
     public function addpatientcond ($patid, $conditiontext) {
         $this->connect();

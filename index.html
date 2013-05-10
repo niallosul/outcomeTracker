@@ -8,6 +8,8 @@
 	
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/sha3.js"></script>
+    <script src="js/highcharts.js"></script>
 
 	<script type="text/javascript" src="js/intmgr.js"></script>
 
@@ -71,6 +73,12 @@
 
   <!--Start of Condition Dialog-->
   <div id="dialog-proj"> 
+  
+    <div id='graphdiv' class='ui-state-default ui-corner-all' style='display:none; border:1px solid blue; width:800px; height:440px; position:absolute; opacity:.8; right:80px; background:white; z-index:+350'>
+      <span id='closegraph' class='ui-corner-all tasklink'>Close</span>
+      <div id='graphloc' style='width:700px; height:380px;'></div>
+    </div>
+  
   
     <!--Start of Diagnosis Section-->
     <div class='secholder'>

@@ -108,7 +108,12 @@ $app->get('/visitmetrics/:id', function ($id) use($userDAO){
     echo (json_encode($userDAO->getvisitmetrics($id))); 
 });
   
- 
+
+// Get Procedure Count By diagnosis id  
+$app->get('/proccounts/:id', function ($id) use($userDAO){
+    echo (json_encode($userDAO->getproccounts($id))); 
+});
+   
 // PUT route
 $app->put('/put', function () {
     echo 'This is a PUT route';

@@ -1,0 +1,78 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>Highcharts Example</title>
+
+		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+		<script type="text/javascript">
+$(function () {
+    var chart;
+    $(document).ready(function() {
+    
+    var diagcd = 11;
+ 	$.getJSON("api/proccounts/"+diagcd,
+    function(data){
+        console.log (data); 
+        var proclist = [];
+        for (i=0; i<data.length; i++) {
+          var proccount = parseFloat(data[i].count);
+          var elem = [];
+          elem.push (data[i].description);
+          elem.push (parseFloat(proccount));
+          proclist.push (elem)
+          }
+
+        console.log (proclist);
+           
+        chart = new Highcharts.Chart({
+            chart: {
+                renderTo: 'graphdiv',
+                plotBackgroundColor: null,
+                plotBorderWidth: null,
+                plotShadow: false
+            },
+            title: {
+                text: 'Procedures Performed for Diagnosis '+diagcd
+            },
+            tooltip: {
+        	    pointFormat: '{series.name}: <b>{point.percentage}%</b>',
+            	percentageDecimals: 1
+            },
+            plotOptions: {
+                pie: {
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    dataLabels: {
+                        enabled: true,
+                        color: '#000000',
+                        connectorColor: '#000000',
+                        formatter: function() {
+                            return '<b>'+ this.point.name +'</b>: '+ this.y;
+                        }
+                    }
+                }
+            },
+            series: [{
+                type: 'pie',
+                name: 'Percentage',
+                data: proclist
+            }]
+        });
+    });
+
+  });
+    
+});
+
+
+
+		</script>
+	</head>
+	<body>
+<script src="js/highcharts.js"></script>
+
+<div id="container" style="min-width: 400px; height: 400px; margin: 0 auto"></div>
+
+	</body>
+</html>
