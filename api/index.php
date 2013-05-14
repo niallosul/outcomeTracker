@@ -9,7 +9,7 @@ $app = new \Slim\Slim();
 
 //Register local DAOs 
 $userDAO = new \IntMgr\memberDAO();
-//$projDAO = new \IntMgr\projectDAO($intmgrdb);
+$reportlist = new \IntMgr\reportlist();
 
 $app->get('/session/:val', function ($val) {
   echo($_SESSION[$val]); 
@@ -110,9 +110,15 @@ $app->get('/visitmetrics/:id', function ($id) use($userDAO){
   
 
 // Get Procedure Count By diagnosis id  
-$app->get('/proccounts/:id', function ($id) use($userDAO){
-    echo (json_encode($userDAO->getproccounts($id))); 
+//$app->get('/proccounts/:id', function ($id) use($userDAO){
+//    echo (json_encode($userDAO->getproccounts($id))); 
+//});
+
+// Get Procedure Count By diagnosis id  
+$app->get('/proccounts/:id', function ($id) use($reportlist){
+    echo (json_encode($reportlist->getproccounts($id))); 
 });
+
    
 // PUT route
 $app->put('/put', function () {

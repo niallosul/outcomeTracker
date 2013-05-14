@@ -6,13 +6,10 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    'IntMgr\\IntMgrConn' => $baseDir . '/Src/IntMgrConn.php',
-    'IntMgr\\member' => $baseDir . '/Src/member.php',
     'IntMgr\\memberDAO' => $baseDir . '/Src/memberDAO.php',
-    'IntMgr\\project' => $baseDir . '/Src/project.php',
-    'IntMgr\\projectDAO' => $baseDir . '/Src/projectDAO.php',
     'IntMgr\\projectDAOTest' => $baseDir . '/Tests/projectDAOTest.php',
     'IntMgr\\projectTest' => $baseDir . '/Tests/projectTest.php',
+    'IntMgr\\reportlist' => $baseDir . '/Src/reportlist.php',
     'Slim\\Environment' => $baseDir . '/api/Slim/Environment.php',
     'Slim\\Exception\\Pass' => $baseDir . '/api/Slim/Exception/Pass.php',
     'Slim\\Exception\\Stop' => $baseDir . '/api/Slim/Exception/Stop.php',
@@ -32,5 +29,4 @@ return array(
     'Slim\\Router' => $baseDir . '/api/Slim/Router.php',
     'Slim\\Slim' => $baseDir . '/api/Slim/Slim.php',
     'Slim\\View' => $baseDir . '/api/Slim/View.php',
-    'db\\PDOConnection' => $baseDir . '/db/PDOConnection.php',
 );

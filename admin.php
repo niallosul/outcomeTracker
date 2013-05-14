@@ -11,7 +11,7 @@ $patlist = $userDAO->getall('patients');
 $doclist = $userDAO->getall('providers');
 
 $provpatlist = $userDAO->getpatsbyprov(4);
-echo (json_encode($provpatlist));
+//echo (json_encode($provpatlist));	
 //$projlist = $projDAO->getall();
 
 //var_dump($userlist);

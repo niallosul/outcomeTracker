@@ -115,6 +115,9 @@ $(document).ready(function() {
          $('#graphdiv').toggle();
 	 });
 
+     $( "#patList").on('click', '.tasklink', displayCondDetails);
+     $( "#patList").on('click', '.newItemText', displayNewCondForm);	
+
 	 $( "#octloginbutt" ).on ('click',function() {
         	var logonobj = new Object();
             logonobj.username=$( "#username" ).val();
@@ -172,10 +175,10 @@ $(document).ready(function() {
   			      $( "#dialog-cond" ).dialog('close');
   			      //Listen for accordion completion and programatically open the previously open patient
   			      //and click the latest condition for that patient 
-  			      $('#fullsection').one('dataModelChanged',function() { 
-		          $('#pat-accord').accordion( "option", "active", activeacc );
-		          $('#pat-accord').find('.condlist:eq('+activeacc+')').find('.tasklink:eq(0)').trigger('click');
-	             });
+  			      $('#patList').one('dataModelChanged',function() { 
+		             $('#pat-accord').accordion( "option", "active", activeacc );
+		             $('#pat-accord').find('.condlist:eq('+activeacc+')').find('.tasklink:eq(0)').trigger('click');
+	              });
 	           }
 	           else {
 	              alert (data);
@@ -245,6 +248,18 @@ $(document).ready(function() {
 		// });
          $( "#visitsearch").slideToggle();
 	 });
+	 
+	 $( '#patsearch').on ('keyup',function() {
+	    var searString = this.value.toUpperCase();
+		$('#pat-accord').find('h3').each(function(){
+		   if ($(this).find('.patinfo').text().toUpperCase().indexOf( searString)<0) {
+			 $(this).hide();
+			}
+			else {
+			 $(this).show();
+		   }
+		  });
+	});
  
 });
 //-----------------------------------------------------------
@@ -281,7 +296,7 @@ function loginuser(meminfo){
 	  imglink = userobj.picture;
 	}
 	$('#memberimg').html('<img style="vertical-align:middle; padding:.6em; height:30px; width:30px" src="'+imglink+'"/>');
-	//displayTasks();
+	
 	displayPatients(memid);
 
 }
@@ -292,15 +307,11 @@ function loginuser(meminfo){
 
 //-----------------------------------------------------------
 function displayPatients(memid){
-    var patListHTML=$('<div></div>')
-        .append($('<h2></h2>').text('Patient List')
-		   .append($('<input placeholder="Patient Search.."></input>').addClass('searchbox')));
 
 	var patListAccord = $('<div id="pat-accord"></div>');
-	$.get($apiUrlBase+"getpatsbyprov/"+memid,
+	$.getJSON($apiUrlBase+"getpatsbyprov/"+memid,
     function(data){
        
-       var targetdiv = $('#fullsection');
        for (i=0; i<data.length; i++) {
           var patdisp = data[i]['Patient'].firstname+" "+data[i]['Patient'].lastname;
           patListAccord.append($('<h3></h3>').append($('<a href="#"></a>')
@@ -313,7 +324,6 @@ function displayPatients(memid){
 		    //console.log (cond);
 		    condListHTML.append($('<div class="ui-state-default ui-corner-all tasklink" style="font-size:.75em"></div>')
 								.data('condinfo',cond)
-								//.data('patinfo',data[i]['Patient'])
 								.append('<span class="ui-icon ui-icon-newwin" style="margin: 0 5px 0 0;position: absolute;left: .2em;top: 50%;margin-top: -8px;"></span>')
 								.append('<span class="patinfo">'+cond.description+'</span>')
 								.append('<span style="float:right; font-size:.75em;">Date:'+cond.date+'</span>')
@@ -324,33 +334,13 @@ function displayPatients(memid){
 		 									.append('<span class="newItemText">+Add New</span>'))
 		 			.append(condListHTML));
        }
-       
-     patListHTML.append(patListAccord);
-     targetdiv.html(patListHTML);
-     $('#pat-accord').accordion({
-			collapsible: true,
-			autoHeight:false,
-			active:false
-		});
-		//console.log("DONE CREATING ACCORDION");
-		targetdiv.trigger('dataModelChanged');
-     }, "json");
-     
-     //Add event Handlers
-     patListHTML.find('.searchbox').on ('keyup',function() {
-	    var searString = this.value.toUpperCase();
-		$('#pat-accord').find('h3').each(function(){
-		   if ($(this).find('.patinfo').text().toUpperCase().indexOf( searString)<0) {
-			 $(this).hide();
-			}
-			else {
-			 $(this).show();
-		   }
-		  });
-	});
-	
-	patListHTML.on('click', '.tasklink', displayCondDetails);
-    patListHTML.on('click', '.newItemText', displayNewCondForm);	
+
+     $('#patList').html(patListAccord);
+     $('#pat-accord').accordion({collapsible: true,autoHeight:false,active:false});
+	 //console.log("DONE CREATING ACCORDION");
+	 $('#patList').trigger('dataModelChanged');
+	 
+    });
 }
 //-----------------------------------------------------------
 
@@ -361,75 +351,46 @@ function displayPatients(memid){
 function displayDiags(condId){
     $('#diags').data('condid',condId);
 	var diagListHTML = $('<div></div>');
-	$.get($apiUrlBase+"conddiags/"+condId,
+	$.getJSON($apiUrlBase+"conddiags/"+condId,
     function(data){
        //console.log (data);
        for (i=0; i<data.length; i++) {
           diagListHTML.append($('<div class="ui-state-default ui-corner-all" style="font-size:.75em; padding:.2em"></div>')
-								//.data('condid',data[i].id)
 								.append('<span>'+data[i].code+' - '+data[i].description+'</span>')
-								.append($('<span class="graphviewer tasklink" style="font-size:.3em">Graph</span>').data('diagid',data[i].diagnosis_id))
+								.append($('<span class="graphviewer" style="font-size:.3em">Graph</span>').data('diaginfo',data[i]))
 
 								);
        }
        $('#diaglist').html(diagListHTML);
+       
+       //-----Add event handler for view graph button------- 
        $('#diaglist').find( '.graphviewer' ).on ('click',function() {
 	 	    //console.log($(this).data('diagid'));
 	 	$('#graphdiv').toggle();
 	 	var chart;    
-	 	var diagcd = $(this).data('diagid');
-
- 		$.getJSON("api/proccounts/"+diagcd,
+	 	var diaginfo = $(this).data('diaginfo');
+        diaginfo.diagnosis_id
+ 		$.getJSON("api/proccounts/"+diaginfo.diagnosis_id,
     	function(data){
-        console.log (data); 
-        var proclist = [];
-        for (i=0; i<data.length; i++) {
-          var proccount = parseFloat(data[i].count);
-          var elem = [];
-          elem.push (data[i].description);
-          elem.push (parseFloat(proccount));
-          proclist.push (elem)
-          }
-
-        console.log (proclist);
+           var proclist = [];
+           for (i=0; i<data.length; i++) {
+             var proccount = parseFloat(data[i].count);
+             var elem = [];
+             elem.push (data[i].description);
+             elem.push (parseFloat(proccount));
+             proclist.push (elem)
+            }
+           graphopts = new Object;       
+           graphopts.dest = 'graphloc';
+           graphopts.title = 'Procedures Performed for Diagnosis '+diaginfo.code;
+           graphopts.series = [{type: 'pie',name: 'Percentage',data: proclist}];
            
-        chart = new Highcharts.Chart({
-            chart: {
-                renderTo: 'graphloc',
-                plotBackgroundColor: null,
-                plotBorderWidth: null,
-                plotShadow: false
-            },
-            title: {
-                text: 'Procedures Performed for Diagnosis '+diagcd
-            },
-            tooltip: {
-        	    pointFormat: '{series.name}: <b>{point.percentage}%</b>',
-            	percentageDecimals: 1
-            },
-            plotOptions: {
-                pie: {
-                    allowPointSelect: true,
-                    cursor: 'pointer',
-                    dataLabels: {
-                        enabled: true,
-                        color: '#000000',
-                        connectorColor: '#000000',
-                        formatter: function() {
-                            return '<b>'+ this.point.name +'</b>: '+ this.y;
-                        }
-                    }
-                }
-            },
-            series: [{
-                type: 'pie',
-                name: 'Percentage',
-                data: proclist
-            }]
-        });
-    });
-	 });
-   }, "json");
+           drawgraph(graphopts);
+         });
+	   });
+	   //------------------------------------------------------
+	   
+   });
 
 }
 //-----------------------------------------------------------
@@ -578,3 +539,39 @@ function creatautocomplete(divId, datasource) {
 	     };	
 }
 //-----------------------------------------------------------
+
+
+//-----------------------------------------------------------
+function drawgraph (graphopts) {
+        chart = new Highcharts.Chart({
+            chart: {
+                renderTo: graphopts.dest,
+                plotBackgroundColor: null,
+                plotBorderWidth: null,
+                plotShadow: false
+            },
+            title: {
+                text: graphopts.title
+            },
+            tooltip: {
+        	    pointFormat: '{series.name}: <b>{point.percentage}%</b>',
+            	percentageDecimals: 1
+            },
+            plotOptions: {
+                pie: {
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    dataLabels: {
+                        enabled: true,
+                        color: '#000000',
+                        connectorColor: '#000000',
+                        formatter: function() {
+                            return '<b>'+ this.point.name +'</b>: '+ this.y;
+                        }
+                    }
+                }
+            },
+            series: graphopts.series
+        });
+}
+//--------------------------------------------------------------

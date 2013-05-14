@@ -1,6 +1,9 @@
 <?php
 
-$db  = new PDO('mysql:dbname=sulincde_outcometracker;host=127.0.0.1', 'guest', 'guest');
+//$db  = new PDO('mysql:dbname=sulincde_outcometracker;host=localhost', 'guest', 'guest');
+
+$params = json_decode(file_get_contents('dbconnect.json', FILE_USE_INCLUDE_PATH));
+$db  = new PDO($params->dsn, $params->user, $params->pass);
 
 $userinfo = json_decode (file_get_contents('php://input'));
 

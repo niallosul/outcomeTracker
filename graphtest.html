@@ -13,6 +13,7 @@ $(function () {
     var diagcd = 11;
  	$.getJSON("api/proccounts/"+diagcd,
     function(data){
+        graphopts = new Object;
         console.log (data); 
         var proclist = [];
         for (i=0; i<data.length; i++) {
@@ -22,18 +23,33 @@ $(function () {
           elem.push (parseFloat(proccount));
           proclist.push (elem)
           }
-
+   
         console.log (proclist);
-           
+        graphopts.dest = 'container';
+        graphopts.title = 'Procedures Performed for Diagnosis '+diagcd;
+        graphopts.series = [{
+                type: 'pie',
+                name: 'Percentage',
+                data: proclist
+            }];
+       drawgraph(graphopts);
+       
+      });     
+
+  });
+    
+});
+
+function drawgraph (graphopts) {
         chart = new Highcharts.Chart({
             chart: {
-                renderTo: 'graphdiv',
+                renderTo: graphopts.dest,
                 plotBackgroundColor: null,
                 plotBorderWidth: null,
                 plotShadow: false
             },
             title: {
-                text: 'Procedures Performed for Diagnosis '+diagcd
+                text: graphopts.title
             },
             tooltip: {
         	    pointFormat: '{series.name}: <b>{point.percentage}%</b>',
@@ -53,18 +69,9 @@ $(function () {
                     }
                 }
             },
-            series: [{
-                type: 'pie',
-                name: 'Percentage',
-                data: proclist
-            }]
+            series: graphopts.series
         });
-    });
-
-  });
-    
-});
-
+}
 
 
 		</script>

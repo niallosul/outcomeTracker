@@ -7,9 +7,21 @@ use \PDO as PDO;
  class memberDAO
  {
  	private $db;
+ 	private $dsn;
+ 	private $user;
+ 	private $pass;
+ 	
+ 	public function __construct(){
+       $params = json_decode(file_get_contents('dbconnect.json', FILE_USE_INCLUDE_PATH));
+       $this->dsn = $params->dsn;
+       $this->user = $params->user;
+       $this->pass = $params->pass;
+       //echo ("Parsed Connect File");
+ 	}
  	
  	public function connect() {
- 	   $this->db  = new PDO('mysql:dbname=sulincde_outcometracker;host=127.0.0.1', 'guest', 'guest');
+       //echo($this->dsn); 
+       $this->db  = new PDO($this->dsn, $this->user, $this->pass);
  	   $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }
     
