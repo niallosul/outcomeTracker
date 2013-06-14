@@ -1,7 +1,5 @@
 <?php
 
-//$db  = new PDO('mysql:dbname=sulincde_outcometracker;host=localhost', 'guest', 'guest');
-
 $params = json_decode(file_get_contents('dbconnect.json', FILE_USE_INCLUDE_PATH));
 $db  = new PDO($params->dsn, $params->user, $params->pass);
 
@@ -16,7 +14,6 @@ $stmt->bindValue(':pass', $pass, PDO::PARAM_STR);
 $stmt->execute();
 
 $loginreply = $stmt->fetchAll(PDO::FETCH_OBJ);
-//var_dump($loginreply);
 
 if($loginreply[0]) {
     $userinfo = json_encode($loginreply[0]);

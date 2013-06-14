@@ -5,11 +5,8 @@ session_start();
 
 $app = new \Slim\Slim();
 
-//Setup local DB instance
-
 //Register local DAOs 
 $userDAO = new \IntMgr\memberDAO();
-$reportlist = new \IntMgr\reportlist();
 
 $app->get('/session/:val', function ($val) {
   echo($_SESSION[$val]); 
@@ -45,12 +42,15 @@ $app->get('/legalvalues', function () use($userDAO){
   echo (json_encode($userDAO->getall('legalvalues'))); 
 });
 
+// Get metrics list 
+$app->get('/metrics', function () use($userDAO){
+  echo (json_encode($userDAO->getall('metrics'))); 
+});
 
 // Get Specific Users Patient List from local db 
 $app->get('/getpatsbyprov/:id', function ($id) use($userDAO){
     echo (json_encode($userDAO->getpatsbyprov($id))); 
 });
-
 
 // Post new Patient Condition
 $app->post('/patcond', function () use($app, $userDAO){
@@ -100,26 +100,14 @@ $app->get('/condvisits/:id', function ($id) use($userDAO){
 //Post new Condition visit
 $app->post('/condvisit', function () use($app, $userDAO){
     $bodyobj = json_decode ($app->request()->getBody());
-    echo ($userDAO->addcondvisit($bodyobj->condid, $bodyobj->provtype, $bodyobj->provid));
+    echo ($userDAO->addcondvisit($bodyobj->condid, $bodyobj->visittype, $bodyobj->visitdate, $bodyobj->visittime, $bodyobj->visitdur, $bodyobj->visitprov));
  });
 
 // Get Visits Metrics  
 $app->get('/visitmetrics/:id', function ($id) use($userDAO){
     echo (json_encode($userDAO->getvisitmetrics($id))); 
 });
-  
 
-// Get Procedure Count By diagnosis id  
-//$app->get('/proccounts/:id', function ($id) use($userDAO){
-//    echo (json_encode($userDAO->getproccounts($id))); 
-//});
-
-// Get Procedure Count By diagnosis id  
-$app->get('/proccounts/:id', function ($id) use($reportlist){
-    echo (json_encode($reportlist->getproccounts($id))); 
-});
-
-   
 // PUT route
 $app->put('/put', function () {
     echo 'This is a PUT route';

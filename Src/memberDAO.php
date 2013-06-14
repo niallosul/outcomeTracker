@@ -16,7 +16,6 @@ use \PDO as PDO;
        $this->dsn = $params->dsn;
        $this->user = $params->user;
        $this->pass = $params->pass;
-       //echo ("Parsed Connect File");
  	}
  	
  	public function connect() {
@@ -133,7 +132,8 @@ use \PDO as PDO;
     public function getcondvisits($condid) {
         $sql = "SELECT cv.* ".
         	   "FROM condition_visit cv ".
-        	   "where cv.pat_cond_id =:condid ";
+        	   "where cv.pat_cond_id =:condid ".
+        	   "order by cv.visitdate desc";
     	$this->connect();
 		$stmt = $this->db->prepare($sql);
 		$stmt->bindValue(':condid', $condid, PDO::PARAM_INT);
@@ -142,13 +142,16 @@ use \PDO as PDO;
     }
  
  
-    //Add new condition vist
-    public function addcondvisit($condid, $provtype, $provid) {
+    //Add new condition visit
+    public function addcondvisit($condid, $visittype, $visitdate, $visittime, $visitdur, $visitprov) {
         $this->connect();
-		$stmt = $this->db->prepare("CALL addcondprov (:condid,:provtype,:provid, @reply)");
-		$stmt->bindValue(':provid', $provid, PDO::PARAM_INT);
+		$stmt = $this->db->prepare("CALL addcondvisit (:condid,:visittype,:visitdate,:visittime,:visitdur,:visitprov, @reply)");
+		$stmt->bindValue(':visitdate', $visitdate, PDO::PARAM_STR);
 		$stmt->bindValue(':condid', $condid, PDO::PARAM_INT);
-		$stmt->bindValue(':provtype', $provtype, PDO::PARAM_STR);
+		$stmt->bindValue(':visittype', $visittype, PDO::PARAM_STR);
+		$stmt->bindValue(':visittime', $visittime, PDO::PARAM_STR);
+		$stmt->bindValue(':visitdur', $visitdur, PDO::PARAM_INT);
+		$stmt->bindValue(':visitprov', $visitprov, PDO::PARAM_INT);
         $stmt->execute();
         $repstmt = $this->db->prepare ("select @reply as repstring");
         $repstmt->execute();
@@ -194,26 +197,12 @@ use \PDO as PDO;
 		return($provpatlist);
     }
 
-    //Returns procedure counts by diagnosis id
-    public function getproccounts($diagid) {
-        $sql = "select p.description, count(cd.diagnosis_id) as 'count'
-				from condition_diagnosis cd
-				join condition_procedure cp on (cp.pat_cond_id = cd.pat_cond_id)
-				join procedures p on (cp.procedure_id = p.id)  
-				where cd.diagnosis_id = :diagid
-				group by cp.procedure_id; ";
-    	$this->connect();
-		$stmt = $this->db->prepare($sql);
-		$stmt->bindValue(':diagid', $diagid, PDO::PARAM_INT);
-		$stmt->execute();
-		return($stmt->fetchAll(PDO::FETCH_OBJ));
-    }
 
 
     public function addpatientcond ($patid, $conditiontext) {
         $this->connect();
 		$stmt = $this->db->prepare("call addpatcond (:condtext, :patid, @reply)");
-		$stmt->bindValue(':condtext', $conditiontext, PDO::PARAM_STR);
+		$stmt->bindValue(':condtext', strip_tags($conditiontext), PDO::PARAM_STR);
 		$stmt->bindValue(':patid', $patid, PDO::PARAM_INT);
         $stmt->execute();
         $repstmt = $this->db->prepare ("select @reply as repstring");

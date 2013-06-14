@@ -3,15 +3,37 @@
   <head>
 	<meta charset="utf-8">
 	<title>Outcome Tracker</title>
-    <link rel="stylesheet" type="text/css" href="http://sulincdesign.com/ocm/css/ui-lightness.css"/>
+    <link rel="stylesheet" type="text/css" href="css/oclightness.css"/>
 	<link rel="stylesheet" type="text/css" href="css/OutTrack.css"/>
+	<link rel="stylesheet" type="text/css" href="css/fullcalendar.css"/>
 	
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
 	<script type="text/javascript" src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/sha3.js"></script>
     <script src="js/highcharts.js"></script>
+    <script src="js/fullcalendar.min.js"></script>
 
-	<script type="text/javascript" src="js/intmgr.js"></script>
+    <script src="js/otrefdata.js"></script>
+    <script src="js/otcontroller.js"></script>
+	<script src="js/outcometracker.js"></script>
+
+    <script type="text/javascript" >
+	   $apiUrlBase = "api/";
+	   $(document).ready(function() {
+
+	   $.get($apiUrlBase+"session/userinfo", function(data) {
+           if (data){
+  			loginuser (data);  
+  		   }
+  		   else {
+  		     showLoginPage();
+  		   }
+  		  }).error(function() { showLoginPage(); })
+
+      var otref = new otrefdata ();
+      var otcont = new otcontroller ();
+      });
+   </script>
 
 </head>
 
@@ -43,7 +65,7 @@
 		</div>
 	</div>
 	
-	<div style='height:90%; width:99%; opacity:.5; background:url(http://sulincdesign.com/ocm/images/healthcare2.jpg);background-size:100% 100%; background-repeat:no-repeat;z-index:-5;position:absolute'></div>
+	<div style='height:90%; width:99%; opacity:.9; background:url(http://sulincdesign.com/ocm/images/healthcare2.jpg);background-size:100% 100%; background-repeat:no-repeat;z-index:-5;position:absolute'></div>
 
 	<div id='loginscreen' style='display:none;padding:30px;'>
 		<div id="loginright" style="width:40%;float:right;margin:30px; margin-top:20px">
@@ -65,10 +87,11 @@
 			</div>
 		</div>
 
-		<div id='right' style='height:50%;'>
+		<div id='right' style='height:100%;'>
 			<div id='top' style='height:100%; width:90%;margin:auto'>
-			   <div><h2>My Schedule:</h2></div>
-			   <div id="taskList" style='height:90%; overflow:auto; white-space: nowrap;'></div>
+			   <div><h2>Appointment Schedule</h2></div>
+			   <div id="apptList" style='height:80%; overflow:auto; white-space: nowrap;background:white; opacity:.7'>
+			   </div>
 			</div>
 		</div>
 
@@ -80,14 +103,18 @@
   <!--Start of Condition Dialog-->
   <div id="dialog-proj"> 
   
-    <div id='graphdiv' class='ui-state-default ui-corner-all' style='display:none; border:1px solid #E78F08; width:800px; height:440px; position:absolute; left:3em; opacity:.8; background:white; z-index:+350'>
+    <div id='graphdiv' class='ui-state-default ui-corner-all' style='display:none; border:1px solid #E78F08; width:95%; height:95%; overflow:auto; position:absolute; opacity:.9; background:white; z-index:+350'>
       <span id='closegraph' style='float:right; padding:5px'>Close</span>
-      <div id='graphloc' style='width:95%; height:90%;margin:auto'></div>
+      <div id='graphloc' style='width:95%; height:400px;margin:auto;'></div><br/>
+      <div id='barloc' style='width:95%; height:400px;margin:auto'></div>
     </div>
   
   
-    <!--Start of Diagnosis Section-->
-    <div class='secholder'>
+
+    <div style='width:33%; float:left'>
+
+      <!--Start of Diagnosis Section-->
+      <div class='secholder'>
         <div id='diagdiv' class='ui-corner-all smallholder'>
 	       <div class='ui-corner-top omwidgeheader'>
 	          <span>Diagnoses</span>
@@ -101,12 +128,12 @@
 	        </div>
 	       <div id='diaglist' class='listholder'></div>
         </div>
-    </div>
-    <!--End of Diagnosis Section-->
+      </div>
+      <!--End of Diagnosis Section-->
 
 
-    <!--Start of Procedure Section-->
-    <div class='secholder'>
+      <!--Start of Procedure Section-->
+      <div class='secholder'>
         <div id='procdiv' class='ui-corner-all smallholder'>
 	       <div class='ui-corner-top omwidgeheader'>
 	          <span>Procedures</span>
@@ -119,32 +146,30 @@
 	        </div>
 	       <div id='proclist' class='listholder'></div>
         </div>
-    </div>
-    <!--End of Procedure Section-->
+      </div>
+      <!--End of Procedure Section-->
 	
 	
-    <!--Start of Provider Section-->
-    <div class='secholder'>
+      <!--Start of Provider Section-->
+      <div class='secholder'>
         <div id='provdiv' class='ui-corner-all smallholder'>
 	       <div class='ui-corner-top omwidgeheader'>
 	          <span>Providers</span>
 	          <span class='newItemText'>+Add New</span>
 	       </div>
 	       <div id='provsearch' class="ui-state-default" style="font-size:.75em; display:none;">
-				<label for="provs">Provider: </label>
-				<input id="provs" /><br/>
-				<label for="provtypes">Type: </label>
-				<input id="provtypes" />
+	       		<select id="provtypes"></select>
+				<input id="provs" />
 				<span id='saveprov' class='savebutt' style='float:right; display:none;'>Save</span>
 	        </div>
 	       <div id='provlist' class='listholder'></div>
         </div>
-    </div>
-    <!--End of Provider Section-->
-    
+      </div>
+      <!--End of Provider Section-->
+   </div> 
     
    <!--Start of Visit Section-->
-    <div style='float:left; width:100%'>
+    <div style='float:right; width:66%;'>
         <div id='visitdiv' class='ui-corner-all smallholder'>
 	       <div class='ui-corner-top omwidgeheader'>
 	          <span>Visits</span>
@@ -155,9 +180,15 @@
 				<select id="visittypes"></select>
 				<label for="visitdate">Date: </label>
 				<input id="visitdate" />
+				<label for="visittime">Time: </label>
+				<input id="visittime" type="time"/>
+				<label for="visitdur">Duration: </label>
+				<input id="visitdur" />
+				<label for="visitprov">Provider: </label>
+				<input id="visitprov" />
 				<span id='savevisit' class='savebutt' style='float:right;'>Save</span>
 	        </div>
-	       <div id= 'visitlist' class='listholder'></div>
+	       <div id= 'visitlist' class='listholder' style='height:25em'></div>
         </div>
     </div>
     <!--End of Visit Section-->
@@ -170,7 +201,7 @@
   
   <div id="dialog-cond">
 		<label for="newcond">Condition: </label>
-		<input id="newcond" />
+		<input id="newcond" style="width:75%" />
 		<button id='savecond' class='savebutt' style='float:right;'>Save</button>
   </div>  
   
