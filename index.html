@@ -47,7 +47,7 @@
 		<div id="userheaderright"  style="float:right;padding:10px; display:none;">
 			<span id="membername" style="margin-right:10px;color:white;font-size:1.8em;vertical-align:middle"></span>
 			<span id="memberimg"></span>
-			<span id="logoutbutt" class="ui-state-default ui-corner-all tasklink" style='font-size:.7em; padding:4px'>Logout</span>
+			<button id="logoutbutt">Logout</button>
 		</div>
  
 		<div id="loginheaderright" style="display:none">
@@ -65,9 +65,9 @@
 		</div>
 	</div>
 	
-	<div style='height:90%; width:99%; opacity:.9; background:url(http://sulincdesign.com/ocm/images/healthcare2.jpg);background-size:100% 100%; background-repeat:no-repeat;z-index:-5;position:absolute'></div>
+	<!--div style='height:90%; width:99%; opacity:.9; background:url(http://sulincdesign.com/ocm/images/healthcare2.jpg);background-size:100% 100%; background-repeat:no-repeat;z-index:-5;position:absolute'></div-->
 
-	<div id='loginscreen' style='display:none;padding:30px;'>
+	<div id='loginscreen' style='height:80%; display:none;padding:30px;background:url(http://sulincdesign.com/ocm/images/healthcare2.jpg);background-size:100% 100%; background-repeat:no-repeat'>
 		<div id="loginright" style="width:40%;float:right;margin:30px; margin-top:20px">
 			<h1 style="color:#1c94c4">Outcome Tracker is a tool that allows surgeons to manage patient conditions, from diagnosis through surgery and post op follow up </h1>
 		</div>
@@ -90,7 +90,7 @@
 		<div id='right' style='height:100%;'>
 			<div id='top' style='height:100%; width:90%;margin:auto'>
 			   <div><h2>Appointment Schedule</h2></div>
-			   <div id="apptList" style='height:80%; overflow:auto; white-space: nowrap;background:white; opacity:.7'>
+			   <div id="apptList" style='height:80%; overflow:auto; white-space: nowrap;background:white;'>
 			   </div>
 			</div>
 		</div>
@@ -103,27 +103,40 @@
   <!--Start of Condition Dialog-->
   <div id="dialog-proj"> 
   
-    <div id='graphdiv' class='ui-state-default ui-corner-all' style='display:none; border:1px solid #E78F08; width:95%; height:95%; overflow:auto; position:absolute; opacity:.9; background:white; z-index:+350'>
+    <div id='graphdiv' class='ui-state-default ui-corner-all' style='display:none; border:1px solid #E78F08; width:95%; height:95%; overflow:auto; position:absolute; background:white; z-index:+350'>
       <span id='closegraph' style='float:right; padding:5px'>Close</span>
       <div id='graphloc' style='width:95%; height:400px;margin:auto;'></div><br/>
       <div id='barloc' style='width:95%; height:400px;margin:auto'></div>
     </div>
   
   
+	<div id='condtoolbar' style='display:none'><button id='condedit'>Edit</button><button id='conddel'>Delete</button></div>
 
-    <div style='width:33%; float:left'>
+    <div class='condinfoholder' style='width:33%; float:left; overflow:auto'>
 
       <!--Start of Diagnosis Section-->
       <div class='secholder'>
         <div id='diagdiv' class='ui-corner-all smallholder'>
-	       <div class='ui-corner-top omwidgeheader'>
-	          <span>Diagnoses</span>
-	          <span class='newItemText'>+Add New</span>
+            <div class='ui-corner-top omwidgeheader'>
+	          <span>Diagnosis</span>
 	       </div>
-	       <div id='diagsearch' class="ui-state-default" style="font-size:.75em; display:none;">
-				<label for="diags">New Diagnosis: </label>
+        	<div id='diagdesc' class='omwidgesubheader'>
+	          <span>Description</span>
+	          <button class='newItemText'>Add</button>
+	          <button class='editItemText' style='display:none'>Edit</button>
+	       </div>
+	       <div id='diagdescform' class="ui-state-default addform" style="font-size:.75em; display:none; overflow:auto">
+				<textarea class='omtextarea' id="diagtext"></textarea>
+    		    <button id='savediagtext' class='savebutt'>Save</button>
+	       </div>
+	       <div id='diagnote' style="padding:5px"></div>
+	       <div id='icddiv' class='omwidgesubheader'>
+	          <span>ICD Code(s)</span>
+	          <button class='newItemText'>Add</button>
+	       </div>
+	       <div id='diagsearch' class="ui-state-default addform" style="font-size:.75em; display:none;">
+				<label for="diags">Search Code or Description: </label>
 				<input id="diags" />
-				<!--span id='savediag' class='savebutt' style='display:none'>Save</span-->
 				<span id='savediag' class='savebutt' style='float:right; display:none;'>Save</span>
 	        </div>
 	       <div id='diaglist' class='listholder'></div>
@@ -135,12 +148,25 @@
       <!--Start of Procedure Section-->
       <div class='secholder'>
         <div id='procdiv' class='ui-corner-all smallholder'>
-	       <div class='ui-corner-top omwidgeheader'>
-	          <span>Procedures</span>
-	          <span class='newItemText'>+Add New</span>
+            <div class='ui-corner-top omwidgeheader'>
+	          <span>Procedure</span>
 	       </div>
-	       <div id='procsearch' class="ui-state-default" style="font-size:.75em; display:none;">
-				<label for="procs">New Procedure: </label>
+        	<div id='procdesc' class='omwidgesubheader'>
+	          <span>Description</span>
+	          <button class='newItemText'>Add</button>
+	          <button class='editItemText' style='display:none'>Edit</button>
+	       </div>
+	       <div id='procdescform' class="ui-state-default addform" style="font-size:.75em; display:none;">
+				<textarea class='omtextarea' id="proctext"></textarea>
+				<button id='saveproctext' class='savebutt'>Save</button>
+	       </div>
+	       <div id='procnote' style="padding:5px"></div>
+	       <div id='cptdiv' class='omwidgesubheader'>
+	          <span>CPT Code(s)</span>
+	          <button class='newItemText'>Add</button>
+	       </div>
+	       <div id='procsearch' class="ui-state-default addform" style="font-size:.75em; display:none;">
+				<label for="procs">Search Code or Description: </label>
 				<input id="procs" />
 				<span id='saveproc' class='savebutt' style='float:right; display:none;'>Save</span>
 	        </div>
@@ -155,7 +181,7 @@
         <div id='provdiv' class='ui-corner-all smallholder'>
 	       <div class='ui-corner-top omwidgeheader'>
 	          <span>Providers</span>
-	          <span class='newItemText'>+Add New</span>
+	          <span class='newItemText'>Add</span>
 	       </div>
 	       <div id='provsearch' class="ui-state-default" style="font-size:.75em; display:none;">
 	       		<select id="provtypes"></select>
@@ -169,26 +195,25 @@
    </div> 
     
    <!--Start of Visit Section-->
-    <div style='float:right; width:66%;'>
+    <div class='condinfoholder' style='float:right; width:66%; overflow:auto'>
         <div id='visitdiv' class='ui-corner-all smallholder'>
 	       <div class='ui-corner-top omwidgeheader'>
 	          <span>Visits</span>
-	          <span class='newItemText'>+Add New</span>
+	          <button class='newItemText'>Add</button>
 	       </div>
 	       <div id='visitsearch' class="ui-state-default" style="font-size:.75em; display:none;">
-				<label for="visittypes">Visit Type: </label>
 				<select id="visittypes"></select>
 				<label for="visitdate">Date: </label>
-				<input id="visitdate" />
+				<input id="visitdate" style="width:8em"/>
 				<label for="visittime">Time: </label>
 				<input id="visittime" type="time"/>
 				<label for="visitdur">Duration: </label>
-				<input id="visitdur" />
+				<input id="visitdur" style="width:3em"/>
 				<label for="visitprov">Provider: </label>
-				<input id="visitprov" />
+				<input id="visitprov" style="width:5em"/>
 				<span id='savevisit' class='savebutt' style='float:right;'>Save</span>
 	        </div>
-	       <div id= 'visitlist' class='listholder' style='height:25em'></div>
+	       <div id= 'visitlist' class='listholder'></div>
         </div>
     </div>
     <!--End of Visit Section-->
@@ -198,12 +223,39 @@
   <!--    End of Condition Dialog    -->
 
 
-  
+  <!--   New Condition Dialog    -->  
   <div id="dialog-cond">
 		<label for="newcond">Condition: </label>
 		<input id="newcond" style="width:75%" />
+		<br/>
+		<label for="conddate">Date: </label>
+		<input id="conddate" />
 		<button id='savecond' class='savebutt' style='float:right;'>Save</button>
   </div>  
+  <!--    End of New Condition Dialog    -->
+  
+  
+  
+  <div id="dialog-confirm" title="Confirm Delete Condition"></div>
+
+
+  <!-- Metric Forms    --> 
+  <div id="clinicvisitform" class="metricform"> 
+    <div id="clinicvisitlist" class="metriclist"></div>
+    <button class="savemetrics">Save</button>
+  </div>  
+ 
+  <div id="followupform" class="metricform"> 
+    <div id="followuplist" class="metriclist"></div>
+    <button class="savemetrics">Save</button>
+  </div>   
+ 
+  <div id="surgeryform" class="metricform"> 
+    <div id="surgerylist" class="metriclist"></div>
+    <button class="savemetrics">Save</button>
+  </div>  
+  <!-- End of Metric From -->
+    
   
 </div>
 

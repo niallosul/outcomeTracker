@@ -6,6 +6,7 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    'IntMgr\\adminDAO' => $baseDir . '/Src/adminDAO.php',
     'IntMgr\\memberDAO' => $baseDir . '/Src/memberDAO.php',
     'IntMgr\\projectDAOTest' => $baseDir . '/Tests/projectDAOTest.php',
     'IntMgr\\projectTest' => $baseDir . '/Tests/projectTest.php',

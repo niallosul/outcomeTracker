@@ -42,21 +42,42 @@ $app->get('/legalvalues', function () use($userDAO){
   echo (json_encode($userDAO->getall('legalvalues'))); 
 });
 
-// Get metrics list 
-$app->get('/metrics', function () use($userDAO){
-  echo (json_encode($userDAO->getall('metrics'))); 
+
+// Post metrics list 
+$app->post('/metrics', function () use($app, $userDAO){
+    $bodyobj = json_decode ($app->request()->getBody());
+    echo ($userDAO->addvisitmetrics($bodyobj));
 });
 
-// Get Specific Users Patient List from local db 
+// Get metrics list 
+$app->get('/metrics', function () use($userDAO){
+  echo (json_encode($userDAO->getmetriclist())); 
+});
+
+// Get Specific Users Patient List 
 $app->get('/getpatsbyprov/:id', function ($id) use($userDAO){
     echo (json_encode($userDAO->getpatsbyprov($id))); 
 });
 
+
+// Get Patient's Condition List 
+$app->get('/patientconds/:id', function ($id) use($userDAO){
+    echo (json_encode($userDAO->getpatcondlist($id))); 
+});
+
+
 // Post new Patient Condition
 $app->post('/patcond', function () use($app, $userDAO){
     $bodyobj = json_decode ($app->request()->getBody());
-    echo ($userDAO->addpatientcond($bodyobj->patid, $bodyobj->condtext));
+    echo ($userDAO->addpatientcond($bodyobj->patid, $bodyobj->provid, $bodyobj->condtext, $bodyobj->conddate));
  });
+
+// Delete a Patient Condition
+$app->delete('/patcond/:id', function ($id) use($app, $userDAO){
+    //$bodyobj = json_decode ($app->request()->getBody());
+    echo ($userDAO->delpatientcond($id));
+ });
+
 
 // Get Condition Diagnoses 
 $app->get('/conddiags/:id', function ($id) use($userDAO){
@@ -107,6 +128,18 @@ $app->post('/condvisit', function () use($app, $userDAO){
 $app->get('/visitmetrics/:id', function ($id) use($userDAO){
     echo (json_encode($userDAO->getvisitmetrics($id))); 
 });
+
+//Post new Condition note
+$app->post('/condnote', function () use($app, $userDAO){
+    $bodyobj = json_decode ($app->request()->getBody());
+    echo ($userDAO->addcondnote($bodyobj->condid, $bodyobj->notetype, $bodyobj->notetext, $bodyobj->userid));
+ });
+
+// Get Condition notes
+$app->get('/condnotes/:id', function ($id) use($userDAO){
+    echo (json_encode($userDAO->getcondnotes($id))); 
+});
+
 
 // PUT route
 $app->put('/put', function () {

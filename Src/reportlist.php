@@ -69,7 +69,7 @@ use \PDO as PDO;
     public function getprovappts($provid) {
         $sql = "select  pc.patient_id, m.firstname, m.lastname, pc.description, cv.* 
 				from condition_visit cv, members m, patient_condition pc
-				where cv.providerid = :provid
+				where cv.provider_id = :provid
 				and cv.start_time is not null AND cv.end_time is not null
 				and cv.pat_cond_id = pc.id and pc.patient_id = m.id; ";
     	$this->connect();

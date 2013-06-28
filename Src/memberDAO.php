@@ -42,6 +42,31 @@ use \PDO as PDO;
 		return($stmt->fetchAll(PDO::FETCH_OBJ));
     }
     
+
+    //Add new Patient Condition
+    public function addpatientcond ($patid, $provid, $conditiontext, $conditiondate) {
+        $this->connect();
+		$stmt = $this->db->prepare("call addpatcond (:patid, :provid, :condtext, :conddate, @reply)");
+		$stmt->bindValue(':patid', $patid, PDO::PARAM_INT);
+		$stmt->bindValue(':provid', $provid, PDO::PARAM_INT);
+		$stmt->bindValue(':condtext', strip_tags($conditiontext), PDO::PARAM_STR);
+		$stmt->bindValue(':conddate', strip_tags($conditiondate), PDO::PARAM_STR);
+        $stmt->execute();
+        $repstmt = $this->db->prepare ("select @reply as repstring");
+        $repstmt->execute();
+        $resarr = $repstmt->fetchAll(PDO::FETCH_OBJ);
+	    return ($resarr[0]->repstring);
+	}
+
+    //Delete Patient Condition
+    public function delpatientcond ($condid) {
+        $this->connect();
+		$stmt = $this->db->prepare("update patient_condition set active_ind = false where id = :condid");
+		$stmt->bindValue(':condid', $condid, PDO::PARAM_INT);
+        $stmt->execute();
+	    return ("Condition ".$condid." deleted");
+	}
+	
     
 	//Returns diagnoses by condition id
     public function getconddiags($condid) {
@@ -160,6 +185,36 @@ use \PDO as PDO;
     } 
 
 
+    //Add new metric list
+    public function addvisitmetrics($metriclist) {
+    	$this->connect();
+    	foreach ($metriclist as $metric) {
+    	   $sql = "insert into visit_details (visitid, metricid, value, created_by, create_dt_tm) ".
+    	   	      "values (:visitid,:metricid,:metricval,:userid, now())";
+		   $stmt = $this->db->prepare($sql);
+
+		   $stmt->bindValue(':visitid', $metric->visitid, PDO::PARAM_INT);
+		   $stmt->bindValue(':metricid', $metric->metricid, PDO::PARAM_INT);
+		   $stmt->bindValue(':metricval', $metric->metricval, PDO::PARAM_INT);
+		   $stmt->bindValue(':userid', $metric->userid, PDO::PARAM_INT);
+
+		   $stmt->execute();
+		}
+		return ($metric->visitid);
+    }
+    //Returns all metrics
+    public function getmetriclist () {
+        $sql = "SELECT m.*, vm.visit_type ".
+        	   "FROM metrics m, visit_metrics vm ".
+        	   "WHERE vm.metric_id=m.id ";
+    	$this->connect();
+		$stmt = $this->db->prepare($sql);
+		$stmt->bindValue(':visitid', $visitid, PDO::PARAM_INT);
+		$stmt->execute();
+		return($stmt->fetchAll(PDO::FETCH_OBJ));
+    }
+    
+    
     //Returns metrics by visit id
     public function getvisitmetrics($visitid) {
         $sql = "SELECT vd.*, m.description ".
@@ -184,33 +239,20 @@ use \PDO as PDO;
 		$stmt->bindValue(':id', $id, PDO::PARAM_INT);
 		$stmt->execute();
 		$patlist = $stmt->fetchAll(PDO::FETCH_OBJ);
-		foreach ($patlist as $pat){
-		   $stmt = $this->db->prepare("SELECT * FROM patient_condition where patient_id =:id order by date desc");
-		   $stmt->bindValue(':id', $pat->id, PDO::PARAM_INT);
-		   $stmt->execute();
-		   $condlist = $stmt->fetchAll(PDO::FETCH_OBJ);
-		   $patinfo = array();
-		   $patinfo['Patient']=$pat;
-		   $patinfo['Conditions']= $condlist;
-		   $provpatlist[]=$patinfo;
-		}
-		return($provpatlist);
+
+        return($patlist);
     }
 
 
-
-    public function addpatientcond ($patid, $conditiontext) {
-        $this->connect();
-		$stmt = $this->db->prepare("call addpatcond (:condtext, :patid, @reply)");
-		$stmt->bindValue(':condtext', strip_tags($conditiontext), PDO::PARAM_STR);
-		$stmt->bindValue(':patid', $patid, PDO::PARAM_INT);
-        $stmt->execute();
-        $repstmt = $this->db->prepare ("select @reply as repstring");
-        $repstmt->execute();
-        $resarr = $repstmt->fetchAll(PDO::FETCH_OBJ);
-	    return ($resarr[0]->repstring);
-	}
-
+    //Returns conditions by patient id
+    public function getpatcondlist($patid) {
+        $sql = "SELECT * FROM patient_condition where patient_id =:id and active_ind = 1 order by date desc";
+    	$this->connect();
+		$stmt = $this->db->prepare($sql);
+		$stmt->bindValue(':id', $patid, PDO::PARAM_INT);
+		$stmt->execute();
+		return($stmt->fetchAll(PDO::FETCH_OBJ));
+    }
 
     public function addprovpatrel($provid, $patid) {
         $this->connect();
@@ -223,6 +265,34 @@ use \PDO as PDO;
         $resarr = $repstmt->fetchAll(PDO::FETCH_OBJ);
 	    return ($resarr[0]->repstring);
 	}
+
+    //Add new condition note
+    public function addcondnote($condid, $notetype, $notetext, $userid) {
+        $this->connect();
+		$stmt = $this->db->prepare("CALL addnote (:condid,:notetype,:notetext, :userid, @reply)");
+		$stmt->bindValue(':condid', $condid, PDO::PARAM_INT);
+		$stmt->bindValue(':notetype', strip_tags($notetype), PDO::PARAM_STR);
+		$stmt->bindValue(':notetext', strip_tags($notetext), PDO::PARAM_STR);
+		$stmt->bindValue(':userid', $userid, PDO::PARAM_INT);
+        $stmt->execute();
+        $repstmt = $this->db->prepare ("select @reply as repstring");
+        $repstmt->execute();
+        $resarr = $repstmt->fetchAll(PDO::FETCH_OBJ);
+	    return ($resarr[0]->repstring);
+    } 
+
+    //Returns notes by condition id
+    public function getcondnotes($condid) {
+        $sql = "SELECT n.* ".
+        	   "FROM notes n ".
+        	   "where n.condition_id =:condid ".
+        	   "order by n.create_dt_tm desc";
+    	$this->connect();
+		$stmt = $this->db->prepare($sql);
+		$stmt->bindValue(':condid', $condid, PDO::PARAM_INT);
+		$stmt->execute();
+		return($stmt->fetchAll(PDO::FETCH_OBJ));
+    }
 	
     // Add a new member to the db 
     public function add($member) {

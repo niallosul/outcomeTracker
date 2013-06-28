@@ -1,7 +1,3 @@
-//-------------------------------------------------
-
-//-----------------------------------------------------------
-
 
 
 //-----------------------------------------------------------
@@ -53,38 +49,56 @@ function displayPatients(memid){
     function(data){
        
        for (i=0; i<data.length; i++) {
-          var patdisp = data[i]['Patient'].firstname+" "+data[i]['Patient'].middlename.substring(0,1)+". "+data[i]['Patient'].lastname;
+          var patdisp = data[i].firstname+" "+data[i].middlename.substring(0,1)+". "+data[i].lastname;
           patListAccord.append($('<h3></h3>').append($('<a href="#"></a>')
 								.append('<span class="patinfo">'+patdisp+'</span>')
-								.append('<span class="patdets">DOB: '+data[i]['Patient'].dob+'</span>'))
+								.append('<span class="patdets">DOB: '+data[i].dob+'</span>'))
 								);
-		  var condListHTML = $('<div class="condlist"></div>').data('patinfo',data[i]['Patient']);
-		  for (j=0; j<data[i]['Conditions'].length; j++) {
-		    var cond = data[i]['Conditions'][j];
-		    //console.log (cond);
-		    condListHTML.append($('<div class="ui-state-default ui-corner-all patlink" style="font-size:.75em"></div>')
-								.data('condinfo',cond)
-								.append('<span class="ui-icon ui-icon-newwin" style="margin: 0 5px 0 0;position: absolute;left: .2em;top: 50%;margin-top: -8px;"></span>')
-								.append('<span class="patinfo">'+cond.description+'</span>')
-								.append('<span style="float:right; font-size:.75em;">Date:'+cond.date+'</span>')
-								);
-		  }
+		  var condListId = 'condList'+data[i].id;
+		  var condListHTML = $('<div class="condlist"></div>').attr('id', condListId).data('patinfo',data[i]);	  
 		 patListAccord.append($('<div></div>')
-		 			.append($('<div></div>').append('<span>Condition List</span>')
-		 									.append('<span class="newItemText">+Add New</span>'))
-		 			.append(condListHTML));
+		 			.append($('<div></div>').addClass('ui-corner-all smallholder')
+		 				.append($('<div></div>').addClass('omwidgeheader ui-corner-top')
+		 									.append('<span>Condition List</span>')
+		 									.append($('<button></button>').addClass('newItemText').text('Add').button()))
+		 				.append(condListHTML)
+		 			));
+		 displayPatConds(data[i].id);
        }
 
      $('#patList').html(patListAccord);
      $('#pat-accord').accordion({collapsible: true,autoHeight:false,active:false});
+     //$(".newItemText").button();
 	 //console.log("DONE CREATING ACCORDION");
-	 $('#patList').trigger('dataModelChanged');
+	 //$('#patList').trigger('dataModelChanged');
 	 
     });
 }
 //-----------------------------------------------------------
 
 
+
+//-----------------------------------------------------------
+function displayPatConds (patId){
+    //console.log ("In pat conds function"+patId);
+    $('div#condList'+patId).html('');
+    $.getJSON($apiUrlBase+"patientconds/"+patId,
+    function(data){
+       //console.log (data);
+       for (i=0; i<data.length; i++) {
+            var condid = 'patcond'+data[i].id;
+		    $('div#condList'+patId).append($('<div class="ui-state-default ui-corner-all patlink" style="font-size:.75em"></div>')
+		    					.attr('id', condid)
+								.data('condinfo',data[i])
+								.append('<span class="ui-icon ui-icon-newwin" style="margin: 0 5px 0 0;position: absolute;left: .2em;top: 50%;margin-top: -8px;"></span>')
+								.append('<span class="patinfo">'+data[i].description+'</span>')
+								.append('<span style="float:right; font-size:.75em;">Date:'+data[i].date+'</span>')
+								);
+		  }
+   });
+
+}
+//-----------------------------------------------------------
 
 //-----------------------------------------------------------
 function displayCalendar(memid){
@@ -158,7 +172,7 @@ function displayCalendar(memid){
               //console.log (visid);
               //console.log ($('#visit-accord a'));
               var visidx = $('#visit-accord a').index(visid);
-              console.log (visidx);
+              //console.log (visidx);
 		      $('#visit-accord').accordion("option", "active",visidx);
 	        });
           }
@@ -180,94 +194,45 @@ function displayDiags(condId){
     function(data){
        //console.log (data);
        for (i=0; i<data.length; i++) {
-          diagListHTML.append($('<div class="ui-state-default ui-corner-all tasklink" style="font-size:.7em; padding:.2em"></div>')
-								.append('<span>'+data[i].code+' - '+data[i].description+'</span>')
-								.append($('<span class="graphviewer" style="font-size:.3em; float:right;">Graph</span>').data('diaginfo',data[i]))
-
+          diagListHTML.append($('<div class="ui-state-default ui-corner-all tasklink" style="overflow:auto; font-size:.75em;"></div>')
+          						.append($('<div style="float:left; width:15%;margin-right:5px"></div>').text(data[i].code))
+								.append($('<div style="float:left; width:65%;font-size:.9em;"></div>').text(data[i].description))
+								.append($('<button class="graphviewer" style="font-size:.3em; float:right;width:15%;">Graph</button>').data('diaginfo',data[i]).button())
 								);
        }
        $('#diaglist').html(diagListHTML);
-       
-       //-----Add event handler for view graph button------- 
-	    $('#diaglist').find( '.graphviewer' ).on ('click',function() {
-	 	    //console.log($(this).data('diagid'));
-	 	$('#graphdiv').toggle();
-	 	var chart;    
-	 	var diaginfo = $(this).data('diaginfo');
- 		$.getJSON("reportapi/proccounts/"+diaginfo.diagnosis_id,
-    	    function(data){
-        graphopts = new Object;
-        console.log (data); 
-        diagproclist = data;
-        var proclist = [];
-        for (i=0; i<data.length; i++) {
-          var proccount = parseFloat(data[i].count);
-          var elem = [];
-          elem.push (data[i].description);
-          elem.push (parseFloat(proccount));
-          proclist.push (elem);
-          }
-   
-        console.log (proclist);
-        graphopts.dest = 'graphloc';
-        graphopts.title = 'Procedures Performed for Diagnosis '+diaginfo.code;
-        graphopts.series = [{
-                type: 'pie',
-                name: 'Percentage',
-                data: proclist
-            }];
-        
-       drawpie(graphopts);
-       
-      }).done(function(){     
-
-    var proclist = [];
-    procgraphopts = new Object;
-    procgraphopts.cats = [];
-
-    proclist[0]=new Object;
-    proclist[0].data=new Array;
-    proclist[0].name = "Before Surgery";
-    proclist[1]=new Object;
-    proclist[1].data=new Array;
-    proclist[1].name = "After Surgery";
-
-    var metricid = 2;
-
-    var deferreds = [];
-    console.log(diagproclist);
-    for ( var i = 0; i < diagproclist.length; ++i ) {
-	   deferreds.push($.getJSON("reportapi/avgmetrics/"+diagproclist[i].id+"/"+metricid));
-    }
-	
-    $.when.apply($,deferreds).done(function() {
-		for ( var i = 0; i < arguments.length; ++i ) {
-			console.log( arguments[i][0][0] );
-			var replyelem = arguments[i][0][0];
-			if ((replyelem.procdesc) && ((replyelem.postopavg) || (replyelem.preopavg) )){
-			   proclist[0].data.push(parseFloat(replyelem.preopavg));
-               proclist[1].data.push(parseFloat(replyelem.postopavg));
-               procgraphopts.cats.push (replyelem.procdesc);
-               procgraphopts.yvalname = replyelem.metricdesc+" (0-10)";
-               procgraphopts.title = replyelem.metricdesc+" change for each procedure";
-            }
-		} 
-		console.log (proclist);
-        procgraphopts.dest = 'barloc';
-    	procgraphopts.series = proclist; 
-    	//procgraphopts.yvalname = data[0].metricdesc+" (0-10)";
-    	drawcol(procgraphopts);
-	});
-		
    });
 
+}
+//-----------------------------------------------------------
 
-	   });
-	   
-	   //------------------------------------------------------
-	   
-   });
 
+//-----------------------------------------------------------
+function displayNotes(condId){
+    //$('#diagnote').data('condid',condId);
+    $('#diagnote').html('');
+    $('#procnote').html('');
+    $( "#diagdesc" ).find('.newItemText').show();
+    $( "#procdesc" ).find('.newItemText').show();
+	$.getJSON($apiUrlBase+"condnotes/"+condId,
+    function(data){
+       //console.log (data);
+       for (i=0; i<data.length; i++) {
+          var notedisp = $('<span class="issStamp">'+data[i].note_text+'</span>')
+          if (data[i].note_type == "diagtext") {
+             //console.log (notedisp);
+             $('#diagnote').append(notedisp);
+             $('#diagdesc').find('.newItemText').hide();
+             $('#diagdesc').find('.editItemText').show();
+		  }
+		  if (data[i].note_type == "proctext") {
+             //console.log (notedisp);
+             $('#procnote').append(notedisp);
+             $('#procdesc').find('.newItemText').hide();
+             $('#procdesc').find('.editItemText').show();
+		  }
+       }
+   });	
 }
 //-----------------------------------------------------------
 
@@ -301,7 +266,7 @@ function displayProvs(condId){
        //console.log (data);
        for (i=0; i<data.length; i++) {
           var provdisp = data[i].prefix+" "+data[i].firstname+" "+data[i].lastname;
-          procListHTML.append($('<div class="ui-state-default ui-corner-all tasklink" style="font-size:.75em"></div>')
+          procListHTML.append($('<div style="font-size:.75em"></div>').addClass("ui-state-default ui-corner-all tasklink")
 								.data('condid',data[i].id)
 								.append('<span>'+data[i].provider_type+': </span>')
 								.append('<span>'+provdisp+'</span>'));
@@ -328,16 +293,23 @@ function displayVisits(condId){
 								.append('<span class="patinfo">'+data[i].type+'</span>')
 								//.append('<span class="patinfo">'+data[i].id+'</span>')
 								.append('<span style="float:right; font-size:.75em;">Date:'+data[i].visitdate+'</span>')));
-		  var metricListHTML = $('<div></div>').attr('id', 'visitmetrics'+data[i].id);
-		  vistListHTML.append($('<div class="metriclist"></div>').append('<span>Metrics</span>')
-		 			  .append('<span class="newItemText">+Add New</span>')
-		 			  .append($('<div class="metricsearch" class="ui-state-default" style="font-size:.75em; display:none;">')
-	       			            .append('<select class="metrictypes"></select>')
-								.append('<input class="metricval" />')
-								.append('<span class="savemetric" style="float:right;">Save</span>'))
-		              .append(metricListHTML));
-		  displayMetrics (metricListHTML, data[i].id);
-		  
+							
+		  var metricDiv = $('<div></div>').attr('id', 'visitmetrics'+data[i].id)
+		  								  .addClass('smallholder visitmetrics ui-corner-all')
+		  								  .data('visitid',data[i].id)
+		  								  .append($('<div></div>').text('Metric List')
+		  								  						  .addClass('omwidgesubheader ui-corner-top'));
+          vistListHTML.append($('<div></div>').attr('id', 'visitdetails'+data[i].id)
+          									  .append(metricDiv)
+          						);
+          						
+          var visitypeformname = data[i].type.toLowerCase().replace(/ /g, '');
+          //console.log (visitypeformname);
+          //console.log ($('#'+visitypeformname+'form'));
+		  $('#'+visitypeformname+'form').clone().appendTo(metricDiv);
+		  //displayMetrics (metricDiv, data[i].id);
+		  displayMetrics (data[i].id);
+			
 		  }
        $('#visitlist').html(vistListHTML);
        $('#visit-accord').accordion({
@@ -345,18 +317,7 @@ function displayVisits(condId){
 			autoHeight:false,
 			active:false
 		});
-	   
-	   $.getJSON($apiUrlBase+"metrics",
-       function(data){
-       //console.log (data);
-       for (i=0; i<data.length; i++) {
-			$('.metrictypes').append($('<option />').val(data[i].id).text(data[i].description));
-         }
-       });
-		
-	   $( ".metriclist" ).find('.newItemText').on ('click',function() {
-         $( ".metricsearch").slideToggle();
-	   });
+	   $( '.savemetrics').button();
 	   $('#visitlist').trigger('accordionDone');
    }, "json");	
 
@@ -364,22 +325,23 @@ function displayVisits(condId){
 //-----------------------------------------------------------
 
 //-----------------------------------------------------------
-function displayMetrics (destdiv,visitId){
-    
+function displayMetrics (visitId){
+
 	$.getJSON($apiUrlBase+"visitmetrics/"+visitId,
     function(data){
        //console.log (data);
           
        for (i=0; i<data.length; i++) {
-          destdiv.append($('<div class="ui-state-default ui-corner-all tasklink" style="font-size:.75em"></div>')
-								.data('condid',data[i].id)
-								.append('<span>'+data[i].description+' - '+data[i].value+'</span>'));
+         $('#visitmetrics'+visitId).find("#metric"+data[i].metricid).val(data[i].value);
+         $('#visitmetrics'+visitId).find("#metric"+data[i].metricid).prop('disabled', true);
        }
-
-   });
+     
+    });
 
 }
 //-----------------------------------------------------------
+
+
 
 
 
@@ -388,14 +350,28 @@ function displayCondDetails(condinfo, patinfo){
     //var condinfo = $(this).data('condinfo');
     //console.log (condinfo);
     //var patinfo = $(this).parents().find('.condlist').data('patinfo');
+    $('#dialog-proj').find(':input').val('');
+    $('#dialog-proj').find('.addform').hide();
     $('#dialog-proj').data('condid',condinfo.id);
+    if (condinfo.created_by == $('#userscreen').data('userid')){
+        $('#condtoolbar').show();
+    }
+    else {
+        $('#condtoolbar').hide();
+    }
+    displayNotes(condinfo.id);
 	displayDiags(condinfo.id);
 	displayProcs(condinfo.id);
 	displayProvs(condinfo.id);
 	displayVisits(condinfo.id);
 	var diagheader = condinfo.description+" - "+patinfo.firstname+" "+patinfo.lastname;
+	    
 	$('#dialog-proj').dialog('option', 'title', diagheader);
 	$('#dialog-proj').dialog('open');
+	var dialogheight = $('#dialog-proj').dialog( "option", "height" );
+	var holderheight = Math.ceil(dialogheight*.8);
+	$('.condinfoholder').height(holderheight);
+	$('#visitlist').height(Math.ceil(holderheight*.75));
 
 }
 //-----------------------------------------------------------

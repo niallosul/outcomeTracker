@@ -4,13 +4,12 @@ require 'Vendors/autoload.php';
 
 
 //Register local DAOs 
-$userDAO = new memberDAO();
-//$projDAO = new projectDAO($intmgrdb);
-        
-$patlist = $userDAO->getall('patients');
-$doclist = $userDAO->getall('providers');
+$userDAO = new adminDAO();
+ 
+$memlist = $userDAO->getallmembers();
+$doclist = $userDAO->getallproviders();
 
-$provpatlist = $userDAO->getpatsbyprov(4);
+//$provpatlist = $userDAO->getpatsbyprov(4);
 //echo (json_encode($provpatlist));	
 //$projlist = $projDAO->getall();
 
@@ -20,7 +19,7 @@ $provpatlist = $userDAO->getpatsbyprov(4);
 ?>  
 <html>
 <head>
-  <title>Integration Manager Admin Page</title>
+  <title>Outcome Tracker Admin Page</title>
   <link rel="stylesheet" type="text/css" href="http://sulincdesign.com/ocm/css/ui-lightness.css"/>
   <link rel="stylesheet" type="text/css" href="css/admin.css"/>
 
@@ -29,7 +28,7 @@ $provpatlist = $userDAO->getpatsbyprov(4);
 
 <div id='header' class="ui-widget-header" style='overflow:auto;'>
 	<div id='headerleft' style="width:50%; float:left; margin-left:10px">
-			<h1 style="display:inline-block;vertical-align:middle">Integration Manager Admin Tool</h1>
+			<h1 style="display:inline-block;vertical-align:middle">Outcome Tracker Admin Tools</h1>
 	</div>
 </div>
 
@@ -48,12 +47,32 @@ $provpatlist = $userDAO->getpatsbyprov(4);
        <label>First Name:</label>
        <input type="text" name="firstname"  />
        <br/>
+       <label>Middle Name:</label>
+       <input type="text" name="middlename"  />
+       <br/>
        <label>Date of Birth:</label>
        <input type="text" name="dob"  />
        <br/>
       <button type="submit">Add Member</button>
      </form>
+    
+     <form class="bigform" action="adminposts.php" method="post">
+       <p>Assign Member type</p>
+       <label>Member Id:</label>
+       <input type="text" name="memid" />
+       <br/>
+       <label>Type:</label>
+       <select name="memtype">
+  			<option value="Patient">Patient</option>
+ 			<option value="Provider">Provider</option>
+ 			<option value="Admin">Admin</option>
+   			<option value="Registrar">Registrar</option>
+		</select>
+       <br/>
+      <button type="submit">Assign Type</button>
+     </form>
      
+          
      <form class="bigform" action="adminposts.php" method="post">
        <p>Assign Patient to Provider</p>
        <label>Provider Id:</label>
@@ -62,7 +81,7 @@ $provpatlist = $userDAO->getpatsbyprov(4);
        <label>Patient Id:</label>
        <input type="text" name="patid"  />
        <br/>
-      <button type="submit">Assign Relationship</button>
+      <button type="submit">Create Relationship</button>
      </form>
      
      </div>
@@ -71,17 +90,17 @@ $provpatlist = $userDAO->getpatsbyprov(4);
   </div>
   
   <div id='right' style='width:55%; float:right'>
-    <div id='top' style='height:50%; width:90%;margin:auto'>
+    <div id='top' style='height:50%; width:90%'>
 
        <div id='users' class='smallholder ui-corner-all'>
-        <div><h2>Patient List:</h2></div>
+        <div><h2>Member List:</h2></div>
         <div style='height:180px; overflow:auto;'>
         <?php
-        foreach ($patlist as $patient) {
-         $userdisp = $patient->firstname." ". $patient->lastname." - ".$patient->dob;
+        foreach ($memlist as $member) {
+         $userdisp = $member->firstname." ". $member->lastname." - ".$member->dob;
          print "<div class='ui-state-default ui-corner-all tasklink'>";
          print "<span style = 'color:grey; margin-left:5px '>{$userdisp}</span>";
-         print "<span style = 'font-size:.25em; margin-left:15px '>{$patient->id}</span>";
+         print "<span style = 'font-size:.25em; margin-left:15px '>{$member->id}</span>";
          print "</div>";
         }
         ?>
@@ -91,7 +110,7 @@ $provpatlist = $userDAO->getpatsbyprov(4);
   
     </div>   
 
-    <div id='bottom' style='height:50%; width:90%;margin:auto'>
+    <div id='bottom' style='height:50%; width:90%'>
 
 
     <div id='projects' class='smallholder ui-corner-all'>

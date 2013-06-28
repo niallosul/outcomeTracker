@@ -34,11 +34,8 @@ function otrefdata () {
     
     $.getJSON($apiUrlBase+"legalvalues",
     function(data){
-       var doctypelist = [];
        for (i=0; i<data.length; i++) {
           if (data[i].dataset == 'doctype'){
-             //doctypelist.push(data[i]);
-             //doctypelist[doctypelist.length-1].label=data[i].value;
              $('#provtypes').append($('<option />').val(data[i].value).text(data[i].value));
              }
           if (data[i].dataset == 'visittype'){
@@ -47,6 +44,33 @@ function otrefdata () {
        }
     });
     
+ 
+ 	 $.getJSON($apiUrlBase+"metrics",
+       function(data){
+       console.log (data);
+       for (i=0; i<data.length; i++) {
+            console.log (data[i].legalvals);
+            var inputHTML = '';
+            if (data[i].inputtype == "range") {
+               legalvals = JSON.parse(data[i].legalvals);
+               inputHTML = '<input class="metricinput" type="number" min="'+legalvals.min+'" max="'+legalvals.max+'"/>';
+               console.log (JSON.parse(data[i].legalvals));
+               }
+            if (data[i].inputtype == "select") {
+               legalvals = JSON.parse(data[i].legalvals);
+               inputHTML = '<select class="metricinput">'
+               for (j=0;j<legalvals.length; j++) {
+                  inputHTML = inputHTML+'<option>'+legalvals[j]+'</option>';
+               }
+               inputHTML = inputHTML+'</select>';
+               console.log (JSON.parse(data[i].legalvals));
+               }
+       		//var metricformlist = 'clinicvisit';
+            var metricformlist = data[i].visit_type.toLowerCase().replace(/ /g, '');
+			$('#'+metricformlist+'list').append($('<label></label>').text(data[i].description).attr('for', 'metric'+data[i].id))
+							.append($(inputHTML).attr('id', 'metric'+data[i].id));
+         }
+       });
     
    //-------------------------------------------------
 }
